@@ -1,24 +1,12 @@
-import { FileCheck, Coins, Activity, LayoutDashboard, ShieldCheck, Trophy } from 'lucide-react';
+import { FileCheck, Coins, Activity, Trophy, Users, Gavel, TrendingUp } from 'lucide-react';
 
-// Informações Gerais
 export const COMPANY_INFO = {
   name: "Associação Brasileira de Ligas de Futsal",
   acronym: "ABLF",
-  email: "contato@ablf.com.br",
-  cnpj: "37.030.834/0001-50",
-  address: "São Paulo - SP",
+  whatsapp: "5511999999999", // Coloque o número real aqui
   instagram: "https://instagram.com/ablfoficial",
 };
 
-// Menu de Navegação
-export const NAV_LINKS = [
-  { href: "#inicio", label: "Início" },
-  { href: "#transparencia", label: "Transparência" },
-  { href: "#ligas", label: "Ligas Filiadas" },
-  { href: "#sobre", label: "A Associação" },
-];
-
-// Dados da Transparência (Atualize aqui e muda no site todo)
 export const TRANSPARENCY_STATS = [
   { 
     label: "Valor Global", 
@@ -27,7 +15,7 @@ export const TRANSPARENCY_STATS = [
     suffix: "",
     icon: Coins, 
     color: "text-ablf-yellow",
-    desc: "Recursos totais captados para fomento"
+    desc: "Recursos totais captados"
   },
   { 
     label: "Propostas Aprovadas", 
@@ -36,15 +24,43 @@ export const TRANSPARENCY_STATS = [
     suffix: "%",
     icon: FileCheck, 
     color: "text-ablf-green",
-    desc: "Eficiência total na aprovação de projetos"
+    desc: "Eficiência na aprovação"
   },
   { 
     label: "Ligas Ativas", 
-    value: 45, // Exemplo
+    value: 45, 
     prefix: "+", 
     suffix: "",
     icon: Trophy, 
     color: "text-blue-400",
-    desc: "Ligas fortalecendo o futsal nacional"
+    desc: "Fortalecendo o futsal"
   },
+];
+
+export const PARTNERS_LIST = [
+  "Liga Paulista", "Federação RJ", "Copa Sul", "Liga Nordeste", 
+  "Penalty", "Umbro", "Sicredi", "Governo Federal"
+];
+
+export const FEATURES_LIST = [
+  {
+    icon: Gavel,
+    title: "Assessoria Jurídica",
+    desc: "Suporte completo para regularização de ligas e estatutos."
+  },
+  {
+    icon: Users,
+    title: "Gestão Integrada",
+    desc: "Plataforma digital para cadastro de atletas e súmulas."
+  },
+  {
+    icon: Trophy,
+    title: "Campeonatos Oficiais",
+    desc: "Organização de competições nacionais padronizadas."
+  },
+  {
+    icon: TrendingUp,
+    title: "Captação de Recursos",
+    desc: "Projetos incentivados para financiar o esporte."
+  }
 ];

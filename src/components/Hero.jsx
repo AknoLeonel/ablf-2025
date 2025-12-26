@@ -1,84 +1,91 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, ShieldCheck } from 'lucide-react';
-import Button from './ui/Button'; // Importando nosso novo botão
-import { COMPANY_INFO } from '../constants'; // Importando os dados
+import { ArrowRight, Trophy, Users } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section id="inicio" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-ablf-dark">
+    <section className="relative min-h-screen flex flex-col pt-20 bg-ablf-dark overflow-hidden">
       
-      {/* --- EFEITOS DE FUNDO (TECH GRID) --- */}
-      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-        {/* Grid cibernético feito com CSS puro */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-ablf-green opacity-20 blur-[100px]"></div>
-        <div className="absolute right-0 bottom-0 -z-10 h-[300px] w-[300px] rounded-full bg-ablf-blue opacity-20 blur-[100px]"></div>
+      {/* Fundo Decorativo Gigante (Marca d'água) */}
+      <div className="absolute top-0 right-0 text-[20rem] font-display font-bold text-white/5 leading-none select-none z-0 pointer-events-none">
+        ABLF
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          
-          {/* Lado Esquerdo: Texto */}
+      <div className="container mx-auto px-4 flex-1 flex flex-col lg:flex-row items-center relative z-10">
+        
+        {/* Coluna de Texto */}
+        <div className="lg:w-1/2 py-12 lg:py-0">
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="lg:w-1/2 text-center lg:text-left"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-ablf-card border border-ablf-green/30 text-ablf-green text-sm font-medium mb-6 backdrop-blur-sm"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              Transparência e Gestão Profissional
-            </motion.div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-12 bg-ablf-yellow"></div>
+              <span className="text-ablf-yellow font-bold tracking-widest uppercase text-sm">Oficial 2025</span>
+            </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-              O Futuro do <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-ablf-green via-ablf-yellow to-ablf-green bg-[length:200%_auto] animate-gradient">
-                Futsal Brasileiro
+            <h1 className="text-6xl md:text-8xl font-display font-black text-white leading-[0.9] mb-8 italic">
+              O BRASIL <br />
+              RESPIRA <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-ablf-yellow to-ablf-green">
+                FUTSAL
               </span>
             </h1>
-            
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-10 leading-relaxed">
-              A {COMPANY_INFO.acronym} une tecnologia, integridade e paixão para transformar ligas amadoras em potências esportivas organizadas.
+
+            <p className="text-gray-300 text-lg max-w-md mb-10 border-l-4 border-ablf-green pl-6 py-2">
+              Unindo ligas, profissionalizando a gestão e levando o esporte a um novo patamar de transparência.
             </p>
-            
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <Button variant="primary" icon={ChevronRight}>
-                Nossos Projetos
-              </Button>
-              <Button variant="outline" icon={ShieldCheck}>
-                Portal da Transparência
-              </Button>
+
+            <div className="flex flex-wrap gap-4">
+              <button className="px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]">
+                <span className="skew-x-[10deg] block">Filiar Minha Liga</span>
+              </button>
+              <button className="px-8 py-4 border-2 border-white text-white font-bold text-xl uppercase tracking-wider hover:bg-white hover:text-ablf-blue transition-colors skew-x-[-10deg]">
+                <span className="skew-x-[10deg] block">Transparência</span>
+              </button>
             </div>
           </motion.div>
+        </div>
 
-          {/* Lado Direito: Elemento Visual Abstrato (Bola/Escudo 3D) */}
+        {/* Coluna Visual (Imagem Recortada) */}
+        <div className="lg:w-1/2 w-full relative h-[500px] lg:h-auto">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="lg:w-1/2 flex justify-center relative"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="relative w-full h-full"
           >
-            <div className="relative w-72 h-72 md:w-96 md:h-96">
-              {/* Círculos animados simulando tecnologia */}
-              <div className="absolute inset-0 border-2 border-ablf-green/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
-              <div className="absolute inset-4 border-2 border-ablf-yellow/20 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                 <div className="w-48 h-48 bg-gradient-to-br from-ablf-green to-ablf-blue rounded-full blur-3xl opacity-30 animate-pulse"></div>
-                 {/* Aqui poderia entrar uma imagem 3D da bola ou logo depois */}
-                 <div className="text-9xl font-bold text-white/5 select-none">ABLF</div>
+            {/* Círculo decorativo atrás */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-ablf-green to-ablf-blue rounded-full blur-3xl opacity-20"></div>
+            
+            {/* Imagem principal com shape agressivo */}
+            <img 
+              src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=2831&auto=format&fit=crop" 
+              alt="Jogador de Futsal" 
+              className="relative z-10 w-full h-full object-cover object-center mask-image-gradient"
+              style={{ clipPath: 'polygon(20% 0%, 100% 0, 100% 100%, 0% 100%)' }} // Corte diagonal na imagem
+            />
+
+            {/* Card Flutuante "Estatística" */}
+            <div className="absolute bottom-10 left-0 bg-ablf-blue p-6 border-l-8 border-ablf-yellow shadow-2xl z-20 max-w-xs">
+              <div className="flex items-center gap-4 mb-2">
+                <Trophy className="text-ablf-yellow" size={32} />
+                <span className="text-white font-bold text-4xl font-display">100%</span>
               </div>
+              <p className="text-gray-300 text-sm font-medium">De aprovação nos projetos submetidos.</p>
             </div>
           </motion.div>
+        </div>
 
+      </div>
+
+      {/* Faixa de Rodapé do Hero (Marcas/Dados) */}
+      <div className="absolute bottom-0 w-full bg-ablf-green/10 border-t border-white/10 backdrop-blur-sm py-4 z-20">
+        <div className="container mx-auto px-4 flex justify-between items-center text-gray-400 text-sm font-mono">
+           <span>SCROLL PARA EXPLORAR</span>
+           <div className="h-px w-24 bg-gray-600 hidden md:block"></div>
+           <span>GESTÃO 2025-2027</span>
         </div>
       </div>
     </section>
