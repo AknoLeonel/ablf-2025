@@ -21,11 +21,17 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase; /* Letras maiúsculas dão peso de "instituição" */
 }
 
-/* Efeito de Corte Diagonal (A Marca Registrada do Novo Site) */
+
+/* Efeitos de Corte para o tema Energy */
 .clip-diagonal {
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
 }
 
 .clip-diagonal-reverse {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Ajuste fino */
+}
+
+/* Se quiser inverter o sentido para variar */
+.clip-diagonal-up {
   clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
 }
