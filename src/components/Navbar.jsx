@@ -6,13 +6,13 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    // Reduzi o padding vertical (py-3) para a barra ficar mais fina
+    // AJUSTE 1: Altura reduzida (py-3) para ficar mais fino
     <nav className="fixed w-full z-50 top-0 start-0 border-b border-gray-800 bg-ablf-dark/90 backdrop-blur-md">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
         
         {/* ESQUERDA: Logo e Nome (Mais compactos) */}
         <a href="#" className="flex items-center space-x-2.5 rtl:space-x-reverse group">
-          {/* Logo menor (w-10 h-10) */}
+          {/* AJUSTE 2: Logo menor (w-10 h-10) em vez de w-12 */}
           <div className="relative w-10 h-10 flex-shrink-0">
              <img 
                src={logoAblf} 
@@ -22,11 +22,12 @@ const Navbar = () => {
           </div>
           
           <div className="flex flex-col justify-center">
-            {/* Sigla menor (text-xl) */}
+            {/* Sigla um pouco menor (text-xl) */}
             <span className="text-xl font-display font-bold whitespace-nowrap text-white leading-none">
               ABLF
             </span>
-            {/* O nome comprido agora SÓ aparece no celular (md:hidden) para limpar o visual no PC */}
+            {/* AJUSTE 3: O nome grande agora SÓ aparece no celular (md:hidden) */}
+            {/* Isso limpa o visual no computador, deixando só o logo e a sigla */}
             <span className="text-[0.6rem] text-ablf-yellow tracking-widest uppercase font-medium leading-tight md:hidden mt-0.5">
               Associação Brasileira <br /> de Ligas de Futsal
             </span>
@@ -38,7 +39,7 @@ const Navbar = () => {
           <button type="button" className="hidden md:block text-white hover:text-ablf-yellow font-medium text-sm transition-colors">
             Área do Filiado
           </button>
-          {/* Botão de Filiar ligeiramente menor no padding */}
+          
           <button type="button" className="text-ablf-blue bg-ablf-yellow hover:bg-white hover:text-ablf-blue font-bold rounded-lg text-sm px-4 py-2 text-center transition-all transform hover:-translate-y-0.5 shadow-lg shadow-yellow-500/20">
             Filiar-se
           </button>
