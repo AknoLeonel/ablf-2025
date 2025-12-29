@@ -1,5 +1,15 @@
 import { FileCheck, Coins, Activity, Trophy, Users, Gavel, TrendingUp } from 'lucide-react';
 
+// IMPORTANDO AS IMAGENS LOCAIS (NOTÍCIAS)
+// Certifique-se que post1.png, post2.png e post3.png estão na pasta src/assets/
+import post1 from '../assets/post1.png';
+import post2 from '../assets/post2.png';
+import post3 from '../assets/post3.png';
+
+// DICA PARA O INSTAGRAM:
+// Quando tiver as fotos reais, salve como insta1.jpg, insta2.jpg etc.
+// e importe elas aqui da mesma forma que fizemos com os posts acima.
+
 export const COMPANY_INFO = {
   name: "Associação Brasileira de Ligas de Futsal",
   acronym: "ABLF",
@@ -71,7 +81,7 @@ export const NEWS_POSTS = [
     category: "Campeonato Brasileiro",
     title: "Final da Liga Nacional será disputada em Brasília com casa cheia",
     date: "12 OUT 2025",
-    image: "https://images.unsplash.com/photo-1518605348305-68913b54cb25?q=80&w=2000&auto=format&fit=crop", // Futsal atmosphere
+    image: post1, // Usando a imagem local post1.png
     link: "#"
   },
   {
@@ -79,7 +89,7 @@ export const NEWS_POSTS = [
     category: "Institucional",
     title: "ABLF fecha parceria histórica com gigante de material esportivo",
     date: "08 OUT 2025",
-    image: "https://images.unsplash.com/photo-1628779238951-be2c9f256544?q=80&w=2000&auto=format&fit=crop", // Handshake/Business or Jersey
+    image: post2, // Usando a imagem local post2.png
     link: "#"
   },
   {
@@ -87,11 +97,12 @@ export const NEWS_POSTS = [
     category: "Regulamento",
     title: "Novas regras para a temporada 2026 são aprovadas em assembleia",
     date: "01 OUT 2025",
-    image: "https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=2000&auto=format&fit=crop", // Tactical board or referee
+    image: post3, // Usando a imagem local post3.png
     link: "#"
   }
 ];
 
+// Mantenha esses links provisórios até salvar as fotos reais do Instagram na pasta assets
 export const INSTAGRAM_FEED = [
   { id: 1, img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800&auto=format&fit=crop", likes: "1.2k" },
   { id: 2, img: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=800&auto=format&fit=crop", likes: "856" },

@@ -5,7 +5,7 @@ import { NEWS_POSTS } from '../constants';
 
 const NewsSection = () => {
   return (
-    <section className="py-24 bg-ablf-dark relative overflow-hidden">
+    <section id="noticias" className="py-24 bg-ablf-darkXS relative overflow-hidden">
       {/* Background Decorativo */}
       <div className="absolute top-0 right-0 w-2/3 h-full bg-ablf-card skew-x-[-12deg] translate-x-1/3 z-0"></div>
       
