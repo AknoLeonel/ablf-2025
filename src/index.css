@@ -35,3 +35,18 @@ h1, h2, h3, h4, h5, h6 {
 .clip-diagonal-up {
   clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); } /* Move até a metade (já que duplicamos a lista) */
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite; /* 30s = velocidade (quanto maior, mais lento) */
+  min-width: 100%; /* Garante que o container tenha tamanho suficiente */
+}
+
+/* Opcional: Pausar quando passar o mouse */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
