@@ -18,35 +18,46 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  text-transform: uppercase; /* Letras maiúsculas dão peso de "instituição" */
+  text-transform: uppercase;
 }
 
+/* --- EFEITOS DE CORTE (SHAPES) --- */
 
-/* Efeitos de Corte para o tema Energy */
+/* Corte descendo da esquerda para a direita (Padrão) */
 .clip-diagonal {
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
 }
 
+/* CORREÇÃO: Corte invertido (sobe na direita) para variar o visual */
 .clip-diagonal-reverse {
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Ajuste fino */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%);
 }
 
-/* Se quiser inverter o sentido para variar */
+/* Variação extra se precisar */
 .clip-diagonal-up {
   clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
 }
 
+/* --- MÁSCARAS DE IMAGEM --- */
+
+/* ADICIONADO: Essencial para o Hero.jsx (faz a foto sumir suavemente embaixo) */
+.mask-image-gradient {
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+/* --- ANIMAÇÕES (MARQUEE) --- */
+
 @keyframes marquee {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* Move até a metade (já que duplicamos a lista) */
+  100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite; /* 30s = velocidade (quanto maior, mais lento) */
-  min-width: 100%; /* Garante que o container tenha tamanho suficiente */
+  animation: marquee 30s linear infinite;
+  min-width: 100%;
 }
 
-/* Opcional: Pausar quando passar o mouse */
 .animate-marquee:hover {
   animation-play-state: paused;
 }

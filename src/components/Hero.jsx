@@ -1,6 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Trophy, Users } from 'lucide-react';
+import { Trophy } from 'lucide-react';
+
+// CORREÇÃO: Importando a imagem para o Vite processar corretamente no build
+import heroImg from '../assets/futsal1.jpg';
 
 const Hero = () => {
   return (
@@ -61,10 +64,10 @@ const Hero = () => {
             
             {/* Imagem principal com shape agressivo */}
             <img 
-              src="/src/assets/futsal1.jpg" 
+              src={heroImg}  /* CORREÇÃO AQUI: Usando a variável importada */
               alt="Jogador de Futsal" 
               className="relative z-10 w-full h-full object-cover object-center mask-image-gradient"
-              style={{ clipPath: 'polygon(20% 0%, 100% 0, 100% 100%, 0% 100%)' }} // Corte diagonal na imagem
+              style={{ clipPath: 'polygon(20% 0%, 100% 0, 100% 100%, 0% 100%)' }} 
             />
 
             {/* Card Flutuante "Estatística" */}
@@ -80,7 +83,7 @@ const Hero = () => {
 
       </div>
 
-      {/* Faixa de Rodapé do Hero (Marcas/Dados) */}
+      {/* Faixa de Rodapé do Hero */}
       <div className="absolute bottom-0 w-full bg-ablf-green/10 border-t border-white/10 backdrop-blur-sm py-4 z-20">
         <div className="container mx-auto px-4 flex justify-between items-center text-gray-400 text-sm font-mono">
            <span>SCROLL PARA EXPLORAR</span>
