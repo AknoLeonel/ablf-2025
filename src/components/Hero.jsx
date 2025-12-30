@@ -61,7 +61,7 @@ const Hero = () => {
             
             {/* Imagem principal com shape agressivo */}
             <img 
-              src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=2831&auto=format&fit=crop" 
+              src="/src/assets/futsal1.jpg" 
               alt="Jogador de Futsal" 
               className="relative z-10 w-full h-full object-cover object-center mask-image-gradient"
               style={{ clipPath: 'polygon(20% 0%, 100% 0, 100% 100%, 0% 100%)' }} // Corte diagonal na imagem

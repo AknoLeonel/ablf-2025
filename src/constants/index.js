@@ -1,19 +1,23 @@
 import { FileCheck, Coins, Activity, Trophy, Users, Gavel, TrendingUp } from 'lucide-react';
 
 // IMPORTANDO AS IMAGENS LOCAIS (NOTÍCIAS)
-// Certifique-se que post1.png, post2.png e post3.png estão na pasta src/assets/
 import post1 from '../assets/post1.png';
 import post2 from '../assets/post2.png';
 import post3 from '../assets/post3.png';
 
-// DICA PARA O INSTAGRAM:
-// Quando tiver as fotos reais, salve como insta1.jpg, insta2.jpg etc.
-// e importe elas aqui da mesma forma que fizemos com os posts acima.
+// IMPORTANDO AS IMAGENS LOCAIS (INSTAGRAM)
+// Certifique-se de renomear os arquivos na pasta assets para: instagram1.png, instagram2.png, etc.
+import instagram1 from '../assets/instagram1.png';
+import instagram2 from '../assets/instagram2.png';
+import instagram3 from '../assets/instagram3.png';
+import instagram4 from '../assets/instagram4.png';
+import instagram5 from '../assets/instagram5.png';
+import instagram6 from '../assets/instagram6.png';
 
 export const COMPANY_INFO = {
   name: "Associação Brasileira de Ligas de Futsal",
   acronym: "ABLF",
-  whatsapp: "5511999999999", // Coloque o número real aqui
+  whatsapp: "5511999999999", 
   instagram: "https://instagram.com/ablfoficial",
 };
 
@@ -81,7 +85,7 @@ export const NEWS_POSTS = [
     category: "Campeonato Brasileiro",
     title: "Final da Liga Nacional será disputada em Brasília com casa cheia",
     date: "12 OUT 2025",
-    image: post1, // Usando a imagem local post1.png
+    image: post1, 
     link: "#"
   },
   {
@@ -89,7 +93,7 @@ export const NEWS_POSTS = [
     category: "Institucional",
     title: "ABLF fecha parceria histórica com gigante de material esportivo",
     date: "08 OUT 2025",
-    image: post2, // Usando a imagem local post2.png
+    image: post2, 
     link: "#"
   },
   {
@@ -97,17 +101,16 @@ export const NEWS_POSTS = [
     category: "Regulamento",
     title: "Novas regras para a temporada 2026 são aprovadas em assembleia",
     date: "01 OUT 2025",
-    image: post3, // Usando a imagem local post3.png
+    image: post3, 
     link: "#"
   }
 ];
 
-// Mantenha esses links provisórios até salvar as fotos reais do Instagram na pasta assets
 export const INSTAGRAM_FEED = [
-  { id: 1, img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800&auto=format&fit=crop", likes: "1.2k" },
-  { id: 2, img: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=800&auto=format&fit=crop", likes: "856" },
-  { id: 3, img: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=800&auto=format&fit=crop", likes: "2.1k" },
-  { id: 4, img: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop", likes: "940" },
-  { id: 5, img: "https://images.unsplash.com/photo-1599474924187-334a405be2ce?q=80&w=800&auto=format&fit=crop", likes: "1.5k" },
-  { id: 6, img: "https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=800&auto=format&fit=crop", likes: "3.2k" },
+  { id: 1, img: instagram1, likes: "1.2k" },
+  { id: 2, img: instagram2, likes: "856" },
+  { id: 3, img: instagram3, likes: "2.1k" },
+  { id: 4, img: instagram4, likes: "940" },
+  { id: 5, img: instagram5, likes: "1.5k" },
+  { id: 6, img: instagram6, likes: "3.2k" },
 ];
