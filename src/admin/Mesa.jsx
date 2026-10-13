@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ExternalLink, FileText, Lock, Pause, Play, RotateCcw, Trash2, Undo2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileText, Lock, Play, Trash2, Undo2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import { PERIODOS, STATUS_JOGO, formatDataJogo, nomeJogador, parseEntityId } from '../lib/format';
 import { Badge, Button, Sheet, Skeleton, Tabs } from '../components/ui';
@@ -9,7 +9,8 @@ import { painelProps } from '../components/ui/tabsProps';
 import { Crest } from '../components/common/ui';
 import { useAuth } from './authContext';
 import { useToast } from './toastContext';
-import { useCronometro } from './useCronometro';
+import Cronometro from './Cronometro';
+import { iniciarCronometro } from './useCronometro';
 import { mensagemErro } from './erros';
 
 const LANCES = [
@@ -52,13 +53,14 @@ export default function Mesa() {
   const qc = useQueryClient();
   const toast = useToast();
   const { isAdmin } = useAuth();
-  const relogio = useCronometro(id);
+  const relogio = useRef(null);
   const [lado, setLado] = useState('mandante');
   const [jogadorAberto, setJogadorAberto] = useState(null);
   const [confirmar, setConfirmar] = useState(null); // 'encerrar' | 'fechar'
   const [minuto, setMinuto] = useState('');
   const [periodoLance, setPeriodoLance] = useState('');
   const [motivo, setMotivo] = useState('');
+  const [dadosAberto, setDadosAberto] = useState(false);
 
   const q = useQuery({ queryKey: ['admin-mesa', id], queryFn: () => carregar(id), enabled: id != null, refetchInterval: 30_000 });
   const dados = q.data;
@@ -78,25 +80,13 @@ export default function Mesa() {
     onError: falha,
   });
 
-  // O placar acompanha os gols lançados (gol e gol contra).
-  const sincronizarPlacar = async () => {
-    const sb = await getSupabase();
-    const { data, error } = await sb.from('eventos_jogo').select('tipo, time_id').eq('jogo_id', id);
-    if (error) throw error;
-    const gm = golsDe(data, jogo.mandante.id, jogo.visitante.id);
-    const gv = golsDe(data, jogo.visitante.id, jogo.mandante.id);
-    if (gm !== jogo.gols_mandante || gv !== jogo.gols_visitante) {
-      const { error: e2 } = await sb.from('jogos').update({ gols_mandante: gm, gols_visitante: gv }).eq('id', id);
-      if (e2) throw e2;
-    }
-  };
+  // O placar acompanha os gols lançados: quem faz isso é um trigger no banco (sem corrida entre aparelhos).
 
   const addEvento = useMutation({
     mutationFn: async (ev) => {
       const sb = await getSupabase();
       const { data, error } = await sb.from('eventos_jogo').insert(ev).select('id').single();
       if (error) throw error;
-      await sincronizarPlacar();
       return data.id;
     },
     onSuccess: atualizar,
@@ -108,7 +98,6 @@ export default function Mesa() {
       const sb = await getSupabase();
       const { error } = await sb.from('eventos_jogo').delete().eq('id', ev.id);
       if (error) throw error;
-      await sincronizarPlacar();
     },
     onSuccess: atualizar,
     onError: falha,
@@ -148,7 +137,7 @@ export default function Mesa() {
   };
 
   const abrirJogador = (j) => {
-    setMinuto(jogo.status === 'ao_vivo' && relogio.ms > 0 ? String(relogio.minuto) : '');
+    setMinuto(jogo.status === 'ao_vivo' && relogio.current?.temTempo() ? String(relogio.current.minuto()) : '');
     setPeriodoLance(String(jogo.periodo_atual || 1));
     setMotivo('');
     setJogadorAberto(j);
@@ -179,10 +168,15 @@ export default function Mesa() {
   const stateEsc = (jogadorId) => { const e = escalacao.find((x) => x.jogador_id === jogadorId); return !e ? 'fora' : e.titular ? 'titular' : 'reserva'; };
 
   const iniciar = () => {
+    iniciarCronometro(id); // o relógio já nasce rodando quando a tela ao vivo aparecer
     patchJogo.mutate({ status: 'ao_vivo', periodo_atual: 1, gols_mandante: jogo.gols_mandante ?? 0, gols_visitante: jogo.gols_visitante ?? 0 });
-    relogio.reiniciar();
   };
-  const mudarPeriodo = (p) => { patchJogo.mutate({ periodo_atual: p }); relogio.zerar(); };
+  // só zera o relógio se o período realmente mudou (toque repetido não apaga o tempo)
+  const mudarPeriodo = (p) => {
+    if (p === jogo.periodo_atual) return;
+    patchJogo.mutate({ periodo_atual: p });
+    relogio.current?.zerar();
+  };
 
   return (
     <div className="space-y-5 max-w-4xl">
@@ -212,15 +206,9 @@ export default function Mesa() {
 
         {/* Cronômetro */}
         {jogo.status === 'ao_vivo' && !bloqueada && (
-          <div className="mt-5 pt-4 border-t border-ablf-line flex flex-wrap items-center justify-between gap-3">
-            <div className="font-mono text-4xl font-bold text-white tabular-nums" aria-label={`Tempo de jogo ${relogio.texto}`}>{relogio.texto}</div>
-            <div className="flex gap-2">
-              {relogio.rodando
-                ? <Button variant="secondary" onClick={relogio.pausar}><Pause size={18} />Pausar</Button>
-                : <Button variant="success" onClick={relogio.iniciar}><Play size={18} />{relogio.ms ? 'Continuar' : 'Iniciar'}</Button>}
-              <Button variant="ghost" onClick={relogio.zerar} aria-label="Zerar cronômetro"><RotateCcw size={18} /></Button>
-            </div>
-            <div className="w-full flex gap-2" role="group" aria-label="Período">
+          <div className="mt-5 pt-4 border-t border-ablf-line space-y-3">
+            <Cronometro ref={relogio} jogoId={id} />
+            <div className="flex gap-2" role="group" aria-label="Período">
               {[1, 2, 3].map((p) => (
                 <button key={p} type="button" aria-pressed={jogo.periodo_atual === p} onClick={() => mudarPeriodo(p)}
                   className={`flex-1 min-h-11 rounded-lg text-sm font-bold border transition-colors ${jogo.periodo_atual === p ? 'bg-ablf-yellow text-ablf-blue border-ablf-yellow' : 'border-ablf-line text-gray-300 hover:border-gray-500'}`}>
@@ -332,7 +320,7 @@ export default function Mesa() {
         </div>
       </details>
 
-      <DadosPartida key={`${jogo.arbitro_principal}|${jogo.arbitro_auxiliar}|${jogo.anotador}`} jogo={jogo} bloqueada={bloqueada} salvar={(p) => patchJogo.mutate(p, { onSuccess: () => toast.show('Dados da partida salvos') })} salvando={patchJogo.isPending} />
+      <DadosPartida key={`${jogo.arbitro_principal}|${jogo.arbitro_auxiliar}|${jogo.anotador}|${jogo.observacoes}`} aberto={dadosAberto} setAberto={setDadosAberto} jogo={jogo} bloqueada={bloqueada} salvar={(p) => patchJogo.mutate(p, { onSuccess: () => toast.show('Dados da partida salvos') })} salvando={patchJogo.isPending} />
 
       <div className="flex flex-wrap gap-3 pb-6">
         <Button as={Link} to={`/jogos/${jogo.id}`} variant="secondary" size="sm"><ExternalLink size={16} />Página pública</Button>
@@ -370,7 +358,7 @@ export default function Mesa() {
             <Button variant="success" className="flex-1" onClick={async () => {
               const acao = confirmar;
               setConfirmar(null);
-              if (acao === 'encerrar') { relogio.pausar(); patchJogo.mutate({ status: 'encerrado' }, { onSuccess: () => toast.show('Jogo encerrado. Revise e feche a súmula.') }); }
+              if (acao === 'encerrar') { relogio.current?.pausar(); patchJogo.mutate({ status: 'encerrado' }, { onSuccess: () => toast.show('Jogo encerrado. Revise e feche a súmula.') }); }
               else patchJogo.mutate({ sumula_fechada: true }, { onSuccess: () => toast.show('Súmula fechada e travada') });
             }}>{confirmar === 'encerrar' ? 'Encerrar' : 'Fechar súmula'}</Button>
           </div>
@@ -387,19 +375,22 @@ export default function Mesa() {
   );
 }
 
-function DadosPartida({ jogo, bloqueada, salvar, salvando }) {
-  const [v, setV] = useState({ arbitro_principal: jogo.arbitro_principal ?? '', arbitro_auxiliar: jogo.arbitro_auxiliar ?? '', anotador: jogo.anotador ?? '', observacoes: jogo.observacoes ?? '' });
+function DadosPartida({ jogo, bloqueada, salvar, salvando, aberto, setAberto }) {
+  const original = { arbitro_principal: jogo.arbitro_principal ?? '', arbitro_auxiliar: jogo.arbitro_auxiliar ?? '', anotador: jogo.anotador ?? '', observacoes: jogo.observacoes ?? '' };
+  const [v, setV] = useState(original);
   const set = (k) => (e) => setV((s) => ({ ...s, [k]: e.target.value }));
   const campo = 'mt-1.5 w-full min-h-12 rounded-xl bg-ablf-card border border-ablf-line px-4 text-white disabled:opacity-60';
+  // envia só o que o usuário mexeu (não sobrescreve alterações feitas por outra pessoa nos demais campos)
+  const alterados = Object.fromEntries(Object.entries(v).filter(([k, x]) => x.trim() !== original[k].trim()).map(([k, x]) => [k, x.trim() || null]));
   return (
-    <details className="rounded-2xl border border-ablf-line bg-ablf-surface">
+    <details open={aberto} onToggle={(e) => setAberto(e.currentTarget.open)} className="rounded-2xl border border-ablf-line bg-ablf-surface">
       <summary className="px-4 min-h-14 flex items-center cursor-pointer font-display text-xl font-bold uppercase text-white">Dados da partida</summary>
-      <form className="px-4 pb-4 grid md:grid-cols-3 gap-4" onSubmit={(e) => { e.preventDefault(); salvar(Object.fromEntries(Object.entries(v).map(([k, x]) => [k, x.trim() || null]))); }}>
+      <form className="px-4 pb-4 grid md:grid-cols-3 gap-4" onSubmit={(e) => { e.preventDefault(); if (Object.keys(alterados).length) salvar(alterados); }}>
         {[['arbitro_principal', 'Árbitro principal'], ['arbitro_auxiliar', 'Árbitro auxiliar'], ['anotador', 'Anotador']].map(([k, l]) => (
           <label key={k} className="block text-xs font-bold uppercase tracking-wider text-gray-300">{l}<input type="text" disabled={bloqueada} value={v[k]} onChange={set(k)} className={campo} /></label>
         ))}
         <label className="md:col-span-3 block text-xs font-bold uppercase tracking-wider text-gray-300">Observações<textarea rows={3} disabled={bloqueada} value={v.observacoes} onChange={set('observacoes')} className={`${campo} py-3`} /></label>
-        <div className="md:col-span-3"><Button type="submit" disabled={bloqueada || salvando}>Salvar dados</Button></div>
+        <div className="md:col-span-3"><Button type="submit" disabled={bloqueada || salvando || Object.keys(alterados).length === 0}>Salvar dados</Button></div>
       </form>
     </details>
   );

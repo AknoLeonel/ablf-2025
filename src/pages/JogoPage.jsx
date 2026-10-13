@@ -140,7 +140,11 @@ export default function JogoPage() {
         <QueryState query={jogoQuery} emptyText="Jogo não encontrado.">
           {() => {
             const placar = jogo.gols_mandante != null && jogo.gols_visitante != null;
-            const lado = (ev) => (ev.time_id === jogo.mandante.id ? 'mandante' : 'visitante');
+            // gol contra aparece do lado de quem foi beneficiado (o placar sobe para esse time)
+            const lado = (ev) => {
+              const doMandante = ev.time_id === jogo.mandante.id;
+              return (ev.tipo === 'gol_contra' ? !doMandante : doMandante) ? 'mandante' : 'visitante';
+            };
             const elenco = (timeId) => (escalacao.data ?? []).filter((e) => e.time_id === timeId);
             const visiveis = dados.evs.filter(PASSA[filtro]);
             const periodos = [...new Set(visiveis.map((e) => e.periodo ?? 1))];

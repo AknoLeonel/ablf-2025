@@ -5,9 +5,10 @@ import { AuthContext } from './authContext';
 // Sessão do Supabase Auth + checagem se o usuário está na tabela `admins`.
 // (A segurança de verdade está nas regras RLS do banco; isto só decide o que mostrar.)
 export default function AuthProvider({ children }) {
-  const [state, setState] = useState({ loading: true, user: null, papel: null });
+  const [state, setState] = useState({ loading: true, user: null, papel: null, erro: false });
   const confirmado = useRef(null); // { id, papel } do usuário já confirmado como equipe
   const sequencia = useRef(0); // descarta respostas antigas que chegam fora de ordem
+  const recarregarRef = useRef(null);
 
   useEffect(() => {
     let vivo = true;
@@ -21,25 +22,31 @@ export default function AuthProvider({ children }) {
         const user = session?.user ?? null;
         if (!user) {
           confirmado.current = null;
-          if (vivo) setState({ loading: false, user: null, papel: null });
+          if (vivo) setState({ loading: false, user: null, papel: null, erro: false });
           return;
         }
         // Já confirmado para este usuário (ex.: renovação de token): não consulta de novo.
         if (confirmado.current?.id === user.id) {
-          if (vivo && minha === sequencia.current) setState({ loading: false, user, papel: confirmado.current.papel });
+          if (vivo && minha === sequencia.current) setState({ loading: false, user, papel: confirmado.current.papel, erro: false });
           return;
         }
         const { data, error } = await sb.from('admins').select('user_id, papel').eq('user_id', user.id).maybeSingle();
         if (!vivo || minha !== sequencia.current) return;
         if (error) {
-          // Falha de rede/servidor NÃO é "sem permissão": mantém o que já sabíamos e não derruba o painel.
-          setState((s) => ({ loading: false, user, papel: s.user?.id === user.id ? s.papel : null }));
+          // Falha de rede/servidor NÃO é "sem permissão": mantém o que já sabíamos; se nunca soubemos,
+          // sinaliza `erro` (a tela oferece "Tentar de novo") em vez de mandar para o login.
+          setState((s) => (s.user?.id === user.id && s.papel ? { ...s, loading: false } : { loading: false, user, papel: null, erro: true }));
           return;
         }
         confirmado.current = data ? { id: user.id, papel: data.papel } : null;
-        setState({ loading: false, user, papel: data?.papel ?? null });
+        setState({ loading: false, user, papel: data?.papel ?? null, erro: false });
       };
 
+      recarregarRef.current = async () => {
+        setState((s) => ({ ...s, loading: true, erro: false }));
+        const { data: atual } = await sb.auth.getSession();
+        await carregar(atual.session);
+      };
       const { data } = await sb.auth.getSession();
       await carregar(data.session);
       const { data: sub } = sb.auth.onAuthStateChange((evento, session) => {
@@ -48,7 +55,7 @@ export default function AuthProvider({ children }) {
         setTimeout(() => carregar(session), 0);
       });
       cancelar = () => sub.subscription.unsubscribe();
-    })().catch(() => vivo && setState({ loading: false, user: null, papel: null }));
+    })().catch(() => vivo && setState({ loading: false, user: null, papel: null, erro: true }));
 
     return () => {
       vivo = false;
@@ -62,14 +69,16 @@ export default function AuthProvider({ children }) {
     if (error) throw error;
   }, []);
 
+  const recarregar = useCallback(() => recarregarRef.current?.(), []);
+
   const signOut = useCallback(async () => {
     const sb = await getSupabase();
     await sb.auth.signOut();
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, isAdmin: state.papel === 'admin', isEquipe: Boolean(state.papel), signIn, signOut }),
-    [state, signIn, signOut],
+    () => ({ ...state, isAdmin: state.papel === 'admin', isEquipe: Boolean(state.papel), signIn, signOut, recarregar }),
+    [state, signIn, signOut, recarregar],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

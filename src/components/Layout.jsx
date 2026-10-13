@@ -30,7 +30,7 @@ function ComBanco() {
   return (
     <div className="min-h-screen bg-ablf-dark text-white selection:bg-ablf-yellow selection:text-ablf-dark overflow-x-hidden font-sans has-bottom-nav">
       <ScrollToHash />
-      <a href="#conteudo" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-ablf-yellow focus:text-ablf-blue focus:px-4 focus:py-2 focus:rounded">
+      <a href="#conteudo" className="no-print sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-ablf-yellow focus:text-ablf-blue focus:px-4 focus:py-2 focus:rounded">
         Pular para o conteúdo
       </a>
       <AppNav />

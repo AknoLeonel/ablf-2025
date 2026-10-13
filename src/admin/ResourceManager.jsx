@@ -256,6 +256,7 @@ function Formulario({ resource, fields, row, defaults, relationOptions, erro, sa
   const [valores, setValores] = useState(() => valoresIniciais(fields, row, defaults));
   const formId = `form-${resource.table}`;
   const resumo = row && resource.resumo ? resource.resumo(row) : null;
+  const [erroLocal, setErroLocal] = useState('');
   return (
     <Sheet open onClose={onCancel} title={`${row ? 'Editar' : 'Novo'} ${resource.singular}`}
       footer={
@@ -264,7 +265,13 @@ function Formulario({ resource, fields, row, defaults, relationOptions, erro, sa
           <Button type="submit" form={formId} className="flex-1" disabled={salvando}>{salvando ? 'Salvando…' : 'Salvar'}</Button>
         </div>
       }>
-      <form id={formId} onSubmit={(e) => { e.preventDefault(); onSubmit(valores); }}>
+      <form id={formId} onSubmit={(e) => {
+        e.preventDefault();
+        const faltando = fields.find((f) => f.required && (f.type === 'file' || f.type === 'image') && !valores[f.name]);
+        if (faltando) { setErroLocal(`Envie o arquivo em “${faltando.label}” antes de salvar.`); return; }
+        setErroLocal('');
+        onSubmit(valores);
+      }}>
         {resumo && (
           <dl className="mb-5 p-3 rounded-xl bg-ablf-surface border border-ablf-line space-y-1.5 text-sm">
             {resumo.map(([k, v]) => <div key={k} className="flex gap-2"><dt className="text-gray-400 min-w-24">{k}</dt><dd className="text-gray-200 break-words">{v || '—'}</dd></div>)}
@@ -276,7 +283,7 @@ function Formulario({ resource, fields, row, defaults, relationOptions, erro, sa
               onChange={(v, extra) => setValores((s) => ({ ...s, [f.name]: v, ...extra }))} />
           ))}
         </div>
-        {erro && <div role="alert" className="mt-4 p-3 rounded-xl border border-red-900/60 bg-red-950/30 text-red-200 text-sm">{erro}</div>}
+        {(erroLocal || erro) && <div role="alert" className="mt-4 p-3 rounded-xl border border-red-900/60 bg-red-950/30 text-red-200 text-sm">{erroLocal || erro}</div>}
       </form>
     </Sheet>
   );

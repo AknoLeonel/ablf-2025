@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Printer } from 'lucide-react';
 import { getJogo, listEventosJogo, listEscalacao } from '../lib/api';
 import { usePageTitle } from '../lib/usePageTitle';
-import { Container, QueryState, BackLink } from '../components/common/ui';
+import { Container, ErrorBlock, Loading, QueryState, BackLink } from '../components/common/ui';
 import { Button } from '../components/ui';
 import logoAblf from '../assets/logo.png';
 import { formatDataJogo, nomeJogador, parseEntityId, PERIODOS, TIPOS_EVENTO } from '../lib/format';
@@ -31,6 +31,9 @@ export default function SumulaPage() {
                 </>
               );
             }
+            // documento oficial: nunca mostrar versão incompleta enquanto lances/escalação carregam ou falham
+            if (eventos.isPending || escalacao.isPending) return <Loading />;
+            if (eventos.isError || escalacao.isError) return <ErrorBlock error={eventos.error ?? escalacao.error} />;
             const evs = [...(eventos.data ?? [])].sort((a, b) => (a.periodo ?? 1) - (b.periodo ?? 1) || (a.minuto ?? 0) - (b.minuto ?? 0) || a.id - b.id);
             const nomeTime = (tid) => (tid === jogo.mandante.id ? jogo.mandante.nome : jogo.visitante.nome);
             const elenco = (tid) => (escalacao.data ?? []).filter((e) => e.time_id === tid);

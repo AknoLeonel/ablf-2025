@@ -89,11 +89,19 @@ function Pagina({ recurso, readOnly }) {
 }
 
 function Painel() {
-  const { loading, user, isEquipe, isAdmin, papel, signOut } = useAuth();
+  const { loading, user, isEquipe, isAdmin, papel, erro, recarregar, signOut } = useAuth();
   const [menu, setMenu] = useState(false);
   usePageTitle('Painel');
 
   if (loading) return <div className="min-h-dvh bg-ablf-dark text-gray-400 flex items-center justify-center" role="status">Carregando…</div>;
+  if (erro) {
+    return (
+      <div className="min-h-dvh bg-ablf-dark text-white flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p role="alert" className="max-w-sm">Não foi possível verificar seu acesso agora (conexão instável?).</p>
+        <div className="flex gap-3"><Button onClick={recarregar}>Tentar de novo</Button><Button variant="secondary" onClick={signOut}>Sair</Button></div>
+      </div>
+    );
+  }
   if (!user || !isEquipe) return <Navigate to="/admin/login" replace />;
 
   const grupos = GRUPOS.filter((g) => !g.admin || isAdmin);

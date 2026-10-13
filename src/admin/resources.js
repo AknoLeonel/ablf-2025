@@ -40,7 +40,6 @@ export const RESOURCES = {
       { name: 'rodada', label: 'Rodada', type: 'number', min: 1 },
       { name: 'tipo_fase', label: 'Tipo de fase', type: 'select', required: true, default: 'classificatoria', options: [['classificatoria', 'Classificatória (conta na tabela)'], ['mata_mata', 'Mata-mata (fora da tabela)']] },
       { name: 'fase', label: 'Nome da fase', type: 'text', help: 'Ex.: Quartas de final, Semifinal, Final' },
-      { name: 'grupo', label: 'Grupo', type: 'text', help: 'Ex.: A (só se a competição tem grupos)' },
       { name: 'status', label: 'Status', type: 'select', options: opcoes(STATUS_JOGO), required: true, default: 'agendado' },
       { name: 'mandante_id', label: 'Mandante', type: 'relation', relation: time, required: true },
       { name: 'visitante_id', label: 'Visitante', type: 'relation', relation: time, required: true },
@@ -94,7 +93,7 @@ export const RESOURCES = {
     fields: [
       { name: 'competicao_id', label: 'Competição', type: 'relation', relation: competicao, required: true },
       { name: 'time_id', label: 'Time', type: 'relation', relation: time, required: true },
-      { name: 'grupo', label: 'Grupo', type: 'text', help: 'Ex.: A ou B. Deixe vazio se a competição não tem grupos.' },
+      { name: 'grupo', label: 'Grupo', type: 'text', help: 'Ex.: A ou B (o jogo entre dois times do mesmo grupo entra nele automaticamente). Vazio = sem grupos.' },
     ],
   },
   times: {

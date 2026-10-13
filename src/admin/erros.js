@@ -8,7 +8,11 @@ const CONHECIDOS = [
   [/jogos_times_diferentes/, 'Mandante e visitante precisam ser times diferentes.'],
   [/violates foreign key constraint/, 'Este registro está em uso por outros dados (jogos, lances, fotos…). Remova ou altere esses vínculos primeiro.'],
   [/duplicate key value/, 'Já existe um registro igual a este.'],
-  [/row-level security|permission denied/, 'Sem permissão para esta ação. Entre com uma conta de administrador.'],
+  [/sumula_fechada/, 'A súmula está fechada. Só um administrador pode alterá-la ou reabri-la.'],
+  [/permissao: o mesário/, 'Seu perfil (mesário) só pode alterar placar, lances, escalação e dados da súmula.'],
+  [/jogos_fechada_so_encerrado/, 'Só um jogo encerrado pode ter a súmula fechada. Reabra a súmula antes de mudar o status.'],
+  [/limite_filiacao/, 'Muitos pedidos recentes. Tente novamente mais tarde.'],
+  [/row-level security|permission denied/, 'Sem permissão para esta ação com o seu perfil.'],
   [/JWT expired/, 'Sua sessão expirou. Saia e entre novamente.'],
 ];
 

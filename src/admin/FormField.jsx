@@ -81,7 +81,7 @@ function ArquivoField({ field, value, onChange, documento }) {
         {busy && <span className="flex items-center gap-1 text-gray-400"><Loader2 size={14} className="animate-spin" /> Enviando…</span>}
         {erro && <span role="alert" className="text-red-400">{erro}</span>}
         {value && !busy && (
-          <button type="button" onClick={() => onChange('')} className="flex items-center gap-1 min-h-9 text-red-400 hover:text-red-300 self-start">
+          <button type="button" onClick={() => onChange('', field.sizeField ? { [field.sizeField]: '' } : undefined)} className="flex items-center gap-1 min-h-9 text-red-400 hover:text-red-300 self-start">
             <Trash2 size={14} /> Remover {documento ? 'arquivo' : 'imagem'}
           </button>
         )}

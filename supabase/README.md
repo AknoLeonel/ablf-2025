@@ -6,6 +6,7 @@
    1. `migrations/20261013000000_schema_inicial.sql`
    2. `migrations/20261013120000_correcoes_revisao.sql` (exclusão segura, integridade da súmula e histórico de alterações)
    3. `migrations/20261014000000_produto_v2.sql` (papéis admin/mesário, fechamento de súmula, grupos e fases, documentos, filiação)
+   4. `migrations/20261014120000_revisao_v2.sql` (placar automático no banco, bloqueios extras da súmula, grupos automáticos, limite anti-spam da filiação)
 3. (Opcional) execute `demo_seed.sql` para ver o site com dados fictícios `[DEMO]`.
    O bloco de limpeza está no fim do arquivo.
 

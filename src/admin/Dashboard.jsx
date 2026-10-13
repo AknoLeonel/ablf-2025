@@ -19,11 +19,11 @@ async function carregar(isAdmin) {
   const [agora, proximos, semFechar, filiacoes, semData] = await Promise.all([
     sb.from('jogos').select(SELECT).or(`status.eq.ao_vivo,and(data_hora.gte.${hoje.toISOString()},data_hora.lt.${amanha.toISOString()})`).order('data_hora').order('id').then(ok),
     sb.from('jogos').select(SELECT).in('status', ['agendado', 'adiado']).gte('data_hora', amanha.toISOString()).lt('data_hora', semana.toISOString()).order('data_hora').limit(8).then(ok),
-    sb.from('jogos').select('id', { count: 'exact', head: true }).eq('status', 'encerrado').eq('sumula_fechada', false).then(ok),
+    sb.from('jogos').select(SELECT, { count: 'exact' }).eq('status', 'encerrado').eq('sumula_fechada', false).order('data_hora', { ascending: false }).limit(6).then(ok),
     isAdmin ? sb.from('solicitacoes_filiacao').select('id', { count: 'exact', head: true }).eq('status', 'nova').then(ok) : Promise.resolve({ count: 0 }),
     isAdmin ? sb.from('jogos').select('id', { count: 'exact', head: true }).eq('status', 'agendado').is('data_hora', null).then(ok) : Promise.resolve({ count: 0 }),
   ]);
-  return { agora: agora.data, proximos: proximos.data, semFechar: semFechar.count ?? 0, filiacoes: filiacoes.count ?? 0, semData: semData.count ?? 0 };
+  return { agora: agora.data, proximos: proximos.data, semFechar: semFechar.count ?? 0, semFecharLista: semFechar.data, filiacoes: filiacoes.count ?? 0, semData: semData.count ?? 0 };
 }
 
 function JogoLinha({ j }) {
@@ -76,9 +76,8 @@ export default function Dashboard() {
 
       {d && (
         <>
-          {(d.semFechar > 0 || d.filiacoes > 0 || d.semData > 0) && (
+          {(d.filiacoes > 0 || d.semData > 0) && (
             <section aria-label="Pendências" className="grid gap-2 sm:grid-cols-3">
-              {d.semFechar > 0 && <Link to="/admin/jogos" className="p-4 rounded-2xl border border-yellow-800/60 bg-yellow-950/20 text-yellow-100"><span className="font-display text-3xl font-black">{d.semFechar}</span> <span className="text-sm">jogo{d.semFechar > 1 ? 's' : ''} encerrado{d.semFechar > 1 ? 's' : ''} com súmula aberta</span></Link>}
               {d.filiacoes > 0 && <Link to="/admin/filiacoes" className="p-4 rounded-2xl border border-sky-800/60 bg-sky-950/20 text-sky-100"><Inbox className="inline -mt-1 mr-1" size={18} /><span className="font-display text-3xl font-black">{d.filiacoes}</span> <span className="text-sm">pedido{d.filiacoes > 1 ? 's' : ''} de filiação novo{d.filiacoes > 1 ? 's' : ''}</span></Link>}
               {d.semData > 0 && <Link to="/admin/jogos" className="p-4 rounded-2xl border border-ablf-line bg-ablf-surface text-gray-200"><span className="font-display text-3xl font-black">{d.semData}</span> <span className="text-sm">jogo{d.semData > 1 ? 's' : ''} sem data definida</span></Link>}
             </section>
@@ -88,6 +87,15 @@ export default function Dashboard() {
             <h2 id="h-hoje" className="font-display text-2xl font-bold uppercase text-ablf-green mb-3">Ao vivo e jogos de hoje</h2>
             {d.agora.length === 0 ? <p className="py-8 text-center text-gray-400 rounded-2xl border border-dashed border-ablf-line">Nenhum jogo hoje.</p> : <ul className="grid gap-3 md:grid-cols-2">{d.agora.map((j) => <JogoLinha key={j.id} j={j} />)}</ul>}
           </section>
+
+          {d.semFechar > 0 && (
+            <section aria-labelledby="h-fechar">
+              <h2 id="h-fechar" className="font-display text-2xl font-bold uppercase text-yellow-300 mb-1">Súmulas para fechar ({d.semFechar})</h2>
+              <p className="text-sm text-gray-400 mb-3">Jogos encerrados cuja súmula ainda não foi conferida e fechada.</p>
+              <ul className="grid gap-3 md:grid-cols-2">{d.semFecharLista.map((j) => <JogoLinha key={j.id} j={j} />)}</ul>
+              {d.semFechar > d.semFecharLista.length && <Link to="/admin/jogos" className="mt-3 inline-block text-sm font-bold text-ablf-green hover:text-white">Ver todos os jogos →</Link>}
+            </section>
+          )}
 
           {d.proximos.length > 0 && (
             <section aria-labelledby="h-prox">

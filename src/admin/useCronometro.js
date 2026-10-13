@@ -12,32 +12,40 @@ function ler(jogoId) {
   return { acumulado: 0, inicio: null };
 }
 
+function gravarNoNavegador(jogoId, estado) {
+  try { localStorage.setItem(chave(jogoId), JSON.stringify(estado)); } catch { /* ignora */ }
+}
+
+// Chamado ao iniciar o jogo, antes de a tela do cronômetro existir.
+export const iniciarCronometro = (jogoId) => gravarNoNavegador(jogoId, { acumulado: 0, inicio: Date.now() });
+
+const decorrido = (e) => e.acumulado + (e.inicio ? Math.max(0, Date.now() - e.inicio) : 0);
+
 export function useCronometro(jogoId) {
   const [estado, setEstado] = useState(() => ler(jogoId));
-  const [agora, setAgora] = useState(() => Date.now());
+  const [, repintar] = useState(0);
 
-  const gravar = useCallback((novo) => {
-    setEstado(novo);
-    try { localStorage.setItem(chave(jogoId), JSON.stringify(novo)); } catch { /* ignora */ }
-  }, [jogoId]);
+  const gravar = useCallback((novo) => { setEstado(novo); gravarNoNavegador(jogoId, novo); }, [jogoId]);
 
+  // Só repinta enquanto roda; ao voltar para a aba, atualiza na hora (o navegador pausa timers em segundo plano).
   useEffect(() => {
     if (!estado.inicio) return undefined;
-    const t = setInterval(() => setAgora(Date.now()), 500);
-    return () => clearInterval(t);
+    const t = setInterval(() => repintar((n) => n + 1), 500);
+    const aoVoltar = () => repintar((n) => n + 1);
+    document.addEventListener('visibilitychange', aoVoltar);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', aoVoltar); };
   }, [estado.inicio]);
 
-  const ms = estado.acumulado + (estado.inicio ? Math.max(0, agora - estado.inicio) : 0);
-  const rodando = Boolean(estado.inicio);
-
+  const ms = decorrido(estado); // (repintar força nova leitura; o valor real é sempre recalculado no clique)
   return {
     ms,
-    rodando,
-    minuto: Math.floor(ms / 60000) + 1, // minuto "em jogo": 0:00–0:59 é o 1º
+    rodando: Boolean(estado.inicio),
     texto: `${String(Math.floor(ms / 60000)).padStart(2, '0')}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`,
-    iniciar: () => { setAgora(Date.now()); gravar({ acumulado: estado.acumulado, inicio: Date.now() }); },
-    pausar: () => gravar({ acumulado: ms, inicio: null }),
+    // Leituras/ações usam Date.now() no momento do clique: nenhuma fração de segundo se perde.
+    minuto: () => Math.floor(decorrido(estado) / 60000) + 1, // 0:00–0:59 é o 1º minuto
+    temTempo: () => decorrido(estado) > 0,
+    iniciar: () => gravar({ acumulado: estado.acumulado, inicio: Date.now() }),
+    pausar: () => gravar({ acumulado: decorrido(estado), inicio: null }),
     zerar: () => gravar({ acumulado: 0, inicio: null }),
-    reiniciar: () => { setAgora(Date.now()); gravar({ acumulado: 0, inicio: Date.now() }); },
   };
 }

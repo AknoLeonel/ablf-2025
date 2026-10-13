@@ -3,7 +3,7 @@ import { Mail } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-black border-t border-gray-800 pt-16 pb-8">
+    <footer className="no-print bg-black border-t border-gray-800 pt-16 pb-8">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">ABLF</h2>
         <p className="text-gray-400 mb-6">Associação Brasileira de Ligas de Futsal</p>

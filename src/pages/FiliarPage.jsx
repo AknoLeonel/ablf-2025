@@ -17,6 +17,7 @@ function validar(v) {
   if (v.responsavel.trim().length < 2) e.responsavel = 'Informe o nome do responsável.';
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email.trim())) e.email = 'Informe um e-mail válido.';
   if (v.telefone.replace(/\D/g, '').length < 10) e.telefone = 'Informe um telefone com DDD.';
+  if (v.qtd_times !== '' && !(Number.isInteger(Number(v.qtd_times)) && Number(v.qtd_times) >= 0 && Number(v.qtd_times) <= 1000)) e.qtd_times = 'Use um número inteiro entre 0 e 1000.';
   if (!v.aceite_lgpd) e.aceite_lgpd = 'É preciso concordar para enviar.';
   return e;
 }
@@ -26,6 +27,7 @@ export default function FiliarPage() {
   const [v, setV] = useState(VAZIO);
   const [erros, setErros] = useState({});
   const [estado, setEstado] = useState('idle'); // idle | enviando | enviado | falhou
+  const [motivoFalha, setMotivoFalha] = useState('');
   const set = (k) => (e) => setV((s) => ({ ...s, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
 
   const enviar = async (e) => {
@@ -45,7 +47,10 @@ export default function FiliarPage() {
         mensagem: v.mensagem.trim() || null, aceite_lgpd: true,
       });
       setEstado('enviado');
-    } catch {
+    } catch (e) {
+      setMotivoFalha(String(e?.message).includes('limite_filiacao')
+        ? 'Já recebemos um pedido com este e-mail há pouco. Aguarde nosso contato ou tente novamente mais tarde.'
+        : 'Não foi possível enviar agora. Tente novamente ou fale conosco pelo WhatsApp.');
       setEstado('falhou');
     }
   };
@@ -81,7 +86,7 @@ export default function FiliarPage() {
           <div className="grid grid-cols-[1fr_6rem] sm:grid-cols-[1fr_6rem_8rem] gap-5">
             <div className="col-span-2 sm:col-span-1"><Field label="Cidade"><TextInput value={v.cidade} onChange={set('cidade')} autoComplete="address-level2" maxLength={80} /></Field></div>
             <Field label="UF"><Select value={v.uf} onChange={set('uf')}><option value="">—</option>{UFS.map((u) => <option key={u} value={u}>{u}</option>)}</Select></Field>
-            <Field label="Nº de times"><TextInput type="number" inputMode="numeric" min="0" max="1000" value={v.qtd_times} onChange={set('qtd_times')} /></Field>
+            <Field label="Nº de times" error={erros.qtd_times}><TextInput type="number" inputMode="numeric" min="0" max="1000" value={v.qtd_times} onChange={set('qtd_times')} /></Field>
           </div>
           <Field label="Mensagem" hint="Conte um pouco sobre a liga (opcional)."><Textarea value={v.mensagem} onChange={set('mensagem')} maxLength={1500} /></Field>
 
@@ -97,7 +102,7 @@ export default function FiliarPage() {
             {erros.aceite_lgpd && <p role="alert" className="mt-1 text-sm text-red-400">{erros.aceite_lgpd}</p>}
           </div>
 
-          {estado === 'falhou' && <p role="alert" className="p-3 rounded-lg border border-red-900/60 bg-red-950/30 text-red-200 text-sm">Não foi possível enviar agora. Tente novamente ou fale conosco pelo WhatsApp.</p>}
+          {estado === 'falhou' && <p role="alert" className="p-3 rounded-lg border border-red-900/60 bg-red-950/30 text-red-200 text-sm">{motivoFalha}</p>}
           <Button type="submit" size="lg" className="w-full" disabled={estado === 'enviando'}>{estado === 'enviando' ? 'Enviando…' : 'Enviar pedido de filiação'}</Button>
         </form>
       </Container>

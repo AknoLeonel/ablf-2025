@@ -32,7 +32,7 @@ export default function AppNav() {
 
   return (
     <>
-      <header className="fixed w-full z-50 top-0 start-0 border-b border-gray-800 bg-ablf-dark/90 backdrop-blur-md">
+      <header className="no-print fixed w-full z-50 top-0 start-0 border-b border-gray-800 bg-ablf-dark/90 backdrop-blur-md">
         <div className="max-w-screen-xl flex items-center justify-between gap-4 mx-auto px-4 h-16">
           <Link to="/" className="flex items-center gap-2.5 group">
             <img src={logoAblf} alt="" width="40" height="40" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(254,221,0,0.3)]" />
@@ -59,7 +59,7 @@ export default function AppNav() {
         </div>
       </header>
 
-      <nav aria-label="Navegação do aplicativo" className="xl:hidden fixed bottom-0 inset-x-0 z-50 border-t border-ablf-line bg-ablf-dark/95 backdrop-blur-md pb-safe">
+      <nav aria-label="Navegação do aplicativo" className="no-print xl:hidden fixed bottom-0 inset-x-0 z-50 border-t border-ablf-line bg-ablf-dark/95 backdrop-blur-md pb-safe">
         <div className="flex max-w-xl mx-auto">
           {PRINCIPAIS.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end} className={tabLink}>

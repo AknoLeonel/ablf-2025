@@ -68,11 +68,15 @@ export function SectionHeading({ eyebrow, title, action }) {
 /* ---------- Abas acessíveis (setas do teclado trocam de aba) ---------- */
 export function Tabs({ tabs, value, onChange, label = 'Seções', className = '' }) {
   const base = useId();
+  // Padrão WAI-ARIA: setas/Home/End movem a seleção E o foco para a aba nova.
   const onKey = (e) => {
     const i = tabs.findIndex((t) => t.id === value);
-    const ir = (n) => { e.preventDefault(); onChange(tabs[(n + tabs.length) % tabs.length].id); };
-    if (e.key === 'ArrowRight') ir(i + 1);
-    if (e.key === 'ArrowLeft') ir(i - 1);
+    const destino = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (destino === undefined) return;
+    e.preventDefault();
+    const alvo = tabs[(destino + tabs.length) % tabs.length];
+    onChange(alvo.id);
+    requestAnimationFrame(() => document.getElementById(`${base}-${alvo.id}`)?.focus());
   };
   return (
     <div role="tablist" aria-label={label} onKeyDown={onKey}
@@ -112,10 +116,25 @@ export function Chips({ items, value, onChange, label }) {
 export function Sheet({ open, onClose, title, children, footer }) {
   const painel = useRef(null);
   const tituloId = useId();
+  // onClose costuma ser uma função nova a cada render do pai; guardá-la num ref evita refazer o
+  // efeito (e roubar o foco de quem está digitando) sempre que o pai re-renderiza.
+  const fecharRef = useRef(onClose);
+  useEffect(() => { fecharRef.current = onClose; });
   useEffect(() => {
     if (!open) return;
     const anterior = document.activeElement;
-    const onKey = (e) => e.key === 'Escape' && onClose();
+    const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const onKey = (e) => {
+      if (e.key === 'Escape') { fecharRef.current(); return; }
+      if (e.key !== 'Tab' || !painel.current) return;
+      // prende o foco dentro do diálogo
+      const itens = [...painel.current.querySelectorAll(FOCAVEIS)];
+      if (!itens.length) { e.preventDefault(); return; }
+      const primeiro = itens[0];
+      const ultimo = itens[itens.length - 1];
+      if (e.shiftKey && (document.activeElement === primeiro || document.activeElement === painel.current)) { e.preventDefault(); ultimo.focus(); }
+      else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+    };
     window.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     painel.current?.focus();
@@ -124,7 +143,7 @@ export function Sheet({ open, onClose, title, children, footer }) {
       document.body.style.overflow = '';
       anterior?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[90] flex items-end md:items-center justify-center" role="presentation">

@@ -9,7 +9,7 @@ export default function LiveBanner({ jogos }) {
   return (
     <Link
       to={`/jogos/${j.id}`}
-      className="fixed top-16 inset-x-0 z-40 h-9 flex items-center justify-center gap-3 px-4 bg-ablf-live text-white text-sm font-bold hover:bg-red-500 transition-colors"
+      className="no-print fixed top-16 inset-x-0 z-40 h-9 flex items-center justify-center gap-3 px-4 bg-ablf-live text-white text-sm font-bold hover:bg-red-500 transition-colors"
     >
       <span className="live-dot inline-block w-2 h-2 rounded-full bg-white shrink-0" aria-hidden="true" />
       <span className="uppercase tracking-wider text-xs shrink-0">Ao vivo</span>
