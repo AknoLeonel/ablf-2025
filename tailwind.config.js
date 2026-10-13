@@ -18,9 +18,6 @@ export default {
       fontFamily: {
         sans: ['Montserrat', 'sans-serif'], // Fonte de texto corrido
         display: ['Barlow Condensed', 'sans-serif'], // Fonte de títulos (Energy)
-      },
-      backgroundImage: {
-        'hero-pattern': "url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2836&auto=format&fit=crop')", // Textura de quadra/bola
       }
     },
   },

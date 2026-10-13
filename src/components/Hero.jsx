@@ -4,6 +4,7 @@ import { Trophy } from 'lucide-react';
 
 // CORREÇÃO: Importando a imagem para o Vite processar corretamente no build
 import heroImg from '../assets/futsal1.jpg';
+import { whatsappLink } from '../constants';
 
 const Hero = () => {
   return (
@@ -41,12 +42,20 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <button className="px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]">
+              <a
+                href={whatsappLink('Olá! Quero filiar minha liga à ABLF.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]"
+              >
                 <span className="skew-x-[10deg] block">Filiar Minha Liga</span>
-              </button>
-              <button className="px-8 py-4 border-2 border-white text-white font-bold text-xl uppercase tracking-wider hover:bg-white hover:text-ablf-blue transition-colors skew-x-[-10deg]">
+              </a>
+              <a
+                href="#transparencia"
+                className="inline-block px-8 py-4 border-2 border-white text-white font-bold text-xl uppercase tracking-wider hover:bg-white hover:text-ablf-blue transition-colors skew-x-[-10deg]"
+              >
                 <span className="skew-x-[10deg] block">Transparência</span>
-              </button>
+              </a>
             </div>
           </motion.div>
         </div>

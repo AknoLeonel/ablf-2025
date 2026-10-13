@@ -1,16 +1,33 @@
+# ABLF – site oficial
 
+Site da Associação Brasileira de Ligas de Futsal (React + Vite + Tailwind) com
+sistema de jogos, tabelas, times, fichas de jogadores e destaques (Supabase).
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Rodar localmente
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run lint
+npm run build
+```
 
-Currently, two official plugins are available:
+## Sem banco x com banco
+- **Sem variáveis de ambiente** o site é só a página institucional (como era antes).
+- **Com** `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` ganha: Jogos, Tabela, Times,
+  Ficha do jogador, Destaques, Notícias do banco e o painel em `/admin`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Passo a passo de configuração: [`supabase/README.md`](supabase/README.md).
+Variáveis disponíveis: [`.env.example`](.env.example).
 
-## React Compiler
+## Estrutura
+```
+src/pages/        páginas públicas (jogos, tabela, times, jogador, destaques, notícias)
+src/admin/        painel administrativo (login, CRUD, súmula, upload de fotos)
+src/lib/          cliente Supabase, consultas (api.js) e formatações
+src/components/   seções da home e componentes compartilhados
+supabase/         migração SQL, seed de demonstração e README
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Hospedagem
+Rotas como `/jogos/3` precisam que o servidor devolva `index.html` para qualquer caminho.
+Já incluídos: `public/_redirects` (Netlify/Cloudflare Pages) e `vercel.json` (Vercel).
