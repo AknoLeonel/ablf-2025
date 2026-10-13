@@ -4,7 +4,9 @@ import { Trophy } from 'lucide-react';
 
 // CORREÇÃO: Importando a imagem para o Vite processar corretamente no build
 import heroImg from '../assets/futsal1.jpg';
+import { Link } from 'react-router-dom';
 import { whatsappLink } from '../constants';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 const Hero = () => {
   return (
@@ -42,14 +44,23 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <a
-                href={whatsappLink('Olá! Quero filiar minha liga à ABLF.')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]"
-              >
-                <span className="skew-x-[10deg] block">Filiar Minha Liga</span>
-              </a>
+              {isSupabaseConfigured ? (
+                <Link
+                  to="/filiar"
+                  className="inline-block px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]"
+                >
+                  <span className="skew-x-[10deg] block">Filiar Minha Liga</span>
+                </Link>
+              ) : (
+                <a
+                  href={whatsappLink('Olá! Quero filiar minha liga à ABLF.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-8 py-4 bg-ablf-yellow text-ablf-blue font-bold text-xl uppercase tracking-wider hover:bg-white transition-colors skew-x-[-10deg]"
+                >
+                  <span className="skew-x-[10deg] block">Filiar Minha Liga</span>
+                </a>
+              )}
               <a
                 href="#transparencia"
                 className="inline-block px-8 py-4 border-2 border-white text-white font-bold text-xl uppercase tracking-wider hover:bg-white hover:text-ablf-blue transition-colors skew-x-[-10deg]"
@@ -61,7 +72,7 @@ const Hero = () => {
         </div>
 
         {/* Coluna Visual (Imagem Recortada) */}
-        <div className="lg:w-1/2 w-full relative h-[500px] lg:h-auto">
+        <div className={`lg:w-1/2 w-full relative ${isSupabaseConfigured ? 'h-[320px] sm:h-[500px]' : 'h-[500px]'} lg:h-auto`}>
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

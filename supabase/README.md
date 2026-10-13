@@ -5,6 +5,7 @@
 2. Em **SQL Editor**, cole e execute **em ordem** (cada arquivo inteiro, sem nada selecionado):
    1. `migrations/20261013000000_schema_inicial.sql`
    2. `migrations/20261013120000_correcoes_revisao.sql` (exclusão segura, integridade da súmula e histórico de alterações)
+   3. `migrations/20261014000000_produto_v2.sql` (papéis admin/mesário, fechamento de súmula, grupos e fases, documentos, filiação)
 3. (Opcional) execute `demo_seed.sql` para ver o site com dados fictícios `[DEMO]`.
    O bloco de limpeza está no fim do arquivo.
 
@@ -34,6 +35,15 @@ escondidas do menu.
    ```
 3. Acesse `/admin` no site e entre com esse e-mail.
 
+### Mesários (só lançam súmula)
+Crie o usuário em **Authentication → Users** e cadastre com o papel `mesario`:
+```sql
+insert into admins (user_id, papel)
+select id, 'mesario' from auth.users where email = 'mesa@email.com';
+```
+O mesário só vê **Hoje** e **Jogos** no painel, lança placar, lances e escalação, e pode fechar a súmula.
+Depois de fechada, só um administrador consegue alterá-la.
+
 Recomendado: em **Authentication → Providers → Email** desative *Allow new users to sign up*,
 para que só quem você criar consiga ter conta.
 
@@ -49,9 +59,11 @@ para que só quem você criar consiga ter conta.
 | `noticias` | notícias da home e da página de notícias |
 | `destaques` | "craque da rodada" e destaques escolhidos à mão |
 | `admins` | quem pode editar |
+| `documentos` | regulamentos, editais, atas (PDF/Word/Excel até 20 MB) – página pública **Documentos** |
+| `solicitacoes_filiacao` | pedidos enviados pelo formulário **/filiar** do site |
 | `auditoria` | histórico automático de tudo que foi criado/alterado/excluído (tela **Histórico** no painel) |
 
 Calculado automaticamente (não precisa digitar): `v_classificacao`,
 `v_estatisticas_jogador_competicao`, `v_estatisticas_jogador` — só jogos **encerrados** contam.
 
-Fotos ficam no bucket público `midia` (JPG/PNG/WebP, até 5 MB; o painel já reduz e converte para WebP antes de enviar).
+Documentos ficam no bucket público `documentos`. Fotos ficam no bucket público `midia` (JPG/PNG/WebP, até 5 MB; o painel já reduz e converte para WebP antes de enviar).

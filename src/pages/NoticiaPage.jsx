@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar } from 'lucide-react';
 import { getNoticia } from '../lib/api';
+import { usePageTitle } from '../lib/usePageTitle';
 import { Container, QueryState, BackLink } from '../components/common/ui';
 import { formatDataCurta, parseEntityId } from '../lib/format';
 
 export default function NoticiaPage() {
   const id = parseEntityId(useParams().id);
   const noticia = useQuery({ queryKey: ['noticia', id], queryFn: () => getNoticia(id), enabled: id != null });
+  usePageTitle(noticia.data?.titulo ?? 'Notícia', noticia.data?.resumo ?? undefined);
   return (
     <div className="pt-24">
       <Container className="max-w-3xl">

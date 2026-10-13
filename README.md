@@ -14,7 +14,8 @@ npm run build
 ## Sem banco x com banco
 - **Sem variáveis de ambiente** o site é só a página institucional (como era antes).
 - **Com** `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` ganha: Jogos, Tabela, Times,
-  Ficha do jogador, Destaques, Notícias do banco e o painel em `/admin`.
+  Ficha do jogador, Destaques, Documentos, Filiação online, Notícias do banco, placar ao vivo e o painel em `/admin`
+  (com mesa de súmula digital para celular/tablet).
 
 Passo a passo de configuração: [`supabase/README.md`](supabase/README.md).
 Variáveis disponíveis: [`.env.example`](.env.example).

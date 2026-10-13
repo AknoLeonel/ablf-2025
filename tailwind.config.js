@@ -13,6 +13,10 @@ export default {
           blue: '#002776',
           dark: '#050a14', // Um azul quase preto, mais profundo
           card: '#0f172a',
+          surface: '#0b1324', // fundo de cartões nas páginas internas
+          raised: '#111c33',  // cartão em destaque / hover
+          line: '#1f2a44',    // bordas e divisores
+          live: '#ef4444',    // ao vivo
         }
       },
       fontFamily: {

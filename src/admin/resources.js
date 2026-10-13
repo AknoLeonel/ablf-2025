@@ -1,5 +1,5 @@
 import { createElement as h } from 'react';
-import { POSICOES, PES, STATUS_JOGO, TIPOS_EVENTO, formatDataJogo } from '../lib/format';
+import { POSICOES, PES, STATUS_JOGO, TIPOS_EVENTO, CATEGORIAS_DOC, formatDataJogo, formatTamanho } from '../lib/format';
 
 const opcoes = (obj) => Object.entries(obj);
 const UFS = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
@@ -38,7 +38,9 @@ export const RESOURCES = {
     fields: [
       { name: 'competicao_id', label: 'Competição', type: 'relation', relation: competicao, required: true },
       { name: 'rodada', label: 'Rodada', type: 'number', min: 1 },
-      { name: 'fase', label: 'Fase', type: 'text', help: 'Ex.: Fase de grupos, Quartas de final, Final' },
+      { name: 'tipo_fase', label: 'Tipo de fase', type: 'select', required: true, default: 'classificatoria', options: [['classificatoria', 'Classificatória (conta na tabela)'], ['mata_mata', 'Mata-mata (fora da tabela)']] },
+      { name: 'fase', label: 'Nome da fase', type: 'text', help: 'Ex.: Quartas de final, Semifinal, Final' },
+      { name: 'grupo', label: 'Grupo', type: 'text', help: 'Ex.: A (só se a competição tem grupos)' },
       { name: 'status', label: 'Status', type: 'select', options: opcoes(STATUS_JOGO), required: true, default: 'agendado' },
       { name: 'mandante_id', label: 'Mandante', type: 'relation', relation: time, required: true },
       { name: 'visitante_id', label: 'Visitante', type: 'relation', relation: time, required: true },
@@ -87,10 +89,12 @@ export const RESOURCES = {
     columns: [
       { key: 'competicao', label: 'Competição', render: (r) => `${r.competicao?.nome} (${r.competicao?.ano})` },
       { key: 'time', label: 'Time', render: (r) => r.time?.nome },
+      { key: 'grupo', label: 'Grupo' },
     ],
     fields: [
       { name: 'competicao_id', label: 'Competição', type: 'relation', relation: competicao, required: true },
       { name: 'time_id', label: 'Time', type: 'relation', relation: time, required: true },
+      { name: 'grupo', label: 'Grupo', type: 'text', help: 'Ex.: A ou B. Deixe vazio se a competição não tem grupos.' },
     ],
   },
   times: {
@@ -232,10 +236,58 @@ export const RESOURCES = {
   },
 };
 
+RESOURCES.documentos = {
+  path: 'documentos',
+  titulo: 'Documentos',
+  singular: 'documento',
+  table: 'documentos',
+  select: '*, competicao:competicoes(nome, ano)',
+  order: [['publicado_em', false]],
+  columns: [
+    { key: 'titulo', label: 'Título' },
+    { key: 'categoria', label: 'Categoria', render: (r) => CATEGORIAS_DOC[r.categoria] },
+    { key: 'tamanho', label: 'Tamanho', render: (r) => formatTamanho(r.tamanho_bytes) },
+    { key: 'publicado', label: 'Publicado', render: (r) => (r.publicado ? 'Sim' : 'Rascunho') },
+  ],
+  fields: [
+    { name: 'titulo', label: 'Título', type: 'text', required: true, wide: true },
+    { name: 'categoria', label: 'Categoria', type: 'select', required: true, default: 'regulamento', options: Object.entries(CATEGORIAS_DOC).map(([v, l]) => [v, l.replace(/s$/, '')]) },
+    { name: 'competicao_id', label: 'Competição', type: 'relation', relation: competicao },
+    { name: 'arquivo_url', label: 'Arquivo (PDF, Word ou Excel, até 20 MB)', type: 'file', sizeField: 'tamanho_bytes', required: true, wide: true },
+    { name: 'tamanho_bytes', label: 'Tamanho', type: 'hidden' },
+    { name: 'descricao', label: 'Descrição', type: 'textarea', rows: 3, wide: true },
+    { name: 'publicado', label: 'Publicado', type: 'boolean', default: true, checkLabel: 'Visível na página Documentos' },
+  ],
+};
+
+const STATUS_FILIACAO = { nova: 'Nova', em_contato: 'Em contato', aprovada: 'Aprovada', recusada: 'Recusada' };
+RESOURCES.filiacoes = {
+  path: 'filiacoes',
+  titulo: 'Filiações',
+  singular: 'pedido de filiação',
+  table: 'solicitacoes_filiacao',
+  canCreate: false,
+  order: [['criado_em', false]],
+  avisoExclusao: 'O pedido de filiação será removido definitivamente.',
+  columns: [
+    { key: 'liga_nome', label: 'Liga' },
+    { key: 'status', label: 'Status', render: (r) => STATUS_FILIACAO[r.status] },
+    { key: 'responsavel', label: 'Responsável' },
+    { key: 'contato', label: 'Contato', render: (r) => `${r.email} · ${r.telefone}` },
+    { key: 'criado_em', label: 'Recebido', render: (r) => new Date(r.criado_em).toLocaleDateString('pt-BR') },
+  ],
+  resumo: (r) => [['Liga', r.liga_nome], ['Responsável', r.responsavel], ['E-mail', r.email], ['Telefone', r.telefone], ['Cidade', [r.cidade, r.uf].filter(Boolean).join(' / ')], ['Nº de times', r.qtd_times], ['Mensagem', r.mensagem]],
+  fields: [
+    { name: 'status', label: 'Status', type: 'select', required: true, options: Object.entries(STATUS_FILIACAO) },
+    { name: 'observacao_interna', label: 'Observação interna', type: 'textarea', rows: 3, wide: true, help: 'Só a equipe vê.' },
+  ],
+};
+
 const ACOES = { INSERT: 'Criou', UPDATE: 'Alterou', DELETE: 'Excluiu' };
 const NOME_TABELA = {
   jogos: 'jogo', competicoes: 'competição', competicao_times: 'inscrição', times: 'time', jogadores: 'jogador',
   eventos_jogo: 'lance', escalacoes: 'escalação', fotos: 'foto', noticias: 'notícia', destaques: 'destaque', ligas: 'liga',
+  documentos: 'documento', solicitacoes_filiacao: 'pedido de filiação',
 };
 const resumo = (r) => {
   const d = r.depois ?? r.antes ?? {};
@@ -256,24 +308,4 @@ RESOURCES.auditoria = {
     { key: 'resumo', label: 'Registro', render: resumo },
   ],
   fields: [],
-};
-
-// Evento da súmula – usado dentro da página do jogo (jogo_id e time_id são preenchidos sozinhos).
-export const EVENTOS = {
-  titulo: 'Lances',
-  singular: 'lance',
-  table: 'eventos_jogo',
-  select: '*, jogador:jogadores(nome, apelido)',
-  order: [['periodo', true], ['minuto', true], ['id', true]],
-  columns: [
-    { key: 'minuto', label: 'Min', render: (r) => (r.minuto != null ? `${r.minuto}'` : '—') },
-    { key: 'tipo', label: 'Lance', render: (r) => TIPOS_EVENTO[r.tipo] },
-    { key: 'jogador', label: 'Jogador', render: (r) => r.jogador?.apelido || r.jogador?.nome },
-  ],
-  fields: [
-    { name: 'jogador_id', label: 'Jogador', type: 'relation', required: true },
-    { name: 'tipo', label: 'Lance', type: 'select', options: opcoes(TIPOS_EVENTO), required: true, default: 'gol' },
-    { name: 'minuto', label: 'Minuto', type: 'number', min: 0, max: 120 },
-    { name: 'periodo', label: 'Período', type: 'select', options: [['1', '1º tempo'], ['2', '2º tempo'], ['3', 'Prorrogação 1'], ['4', 'Prorrogação 2']] },
-  ],
 };

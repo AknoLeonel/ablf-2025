@@ -5,8 +5,8 @@ import { AuthContext } from './authContext';
 // Sessão do Supabase Auth + checagem se o usuário está na tabela `admins`.
 // (A segurança de verdade está nas regras RLS do banco; isto só decide o que mostrar.)
 export default function AuthProvider({ children }) {
-  const [state, setState] = useState({ loading: true, user: null, isAdmin: false });
-  const adminDe = useRef(null); // id do usuário já confirmado como admin
+  const [state, setState] = useState({ loading: true, user: null, papel: null });
+  const confirmado = useRef(null); // { id, papel } do usuário já confirmado como equipe
   const sequencia = useRef(0); // descarta respostas antigas que chegam fora de ordem
 
   useEffect(() => {
@@ -20,24 +20,24 @@ export default function AuthProvider({ children }) {
         const minha = ++sequencia.current;
         const user = session?.user ?? null;
         if (!user) {
-          adminDe.current = null;
-          if (vivo) setState({ loading: false, user: null, isAdmin: false });
+          confirmado.current = null;
+          if (vivo) setState({ loading: false, user: null, papel: null });
           return;
         }
         // Já confirmado para este usuário (ex.: renovação de token): não consulta de novo.
-        if (adminDe.current === user.id) {
-          if (vivo && minha === sequencia.current) setState({ loading: false, user, isAdmin: true });
+        if (confirmado.current?.id === user.id) {
+          if (vivo && minha === sequencia.current) setState({ loading: false, user, papel: confirmado.current.papel });
           return;
         }
-        const { data, error } = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+        const { data, error } = await sb.from('admins').select('user_id, papel').eq('user_id', user.id).maybeSingle();
         if (!vivo || minha !== sequencia.current) return;
         if (error) {
-          // Falha de rede/servidor NÃO é "não é admin": mantém o que já sabíamos e não derruba o painel.
-          setState((s) => ({ loading: false, user, isAdmin: s.isAdmin && s.user?.id === user.id }));
+          // Falha de rede/servidor NÃO é "sem permissão": mantém o que já sabíamos e não derruba o painel.
+          setState((s) => ({ loading: false, user, papel: s.user?.id === user.id ? s.papel : null }));
           return;
         }
-        adminDe.current = data ? user.id : null;
-        setState({ loading: false, user, isAdmin: Boolean(data) });
+        confirmado.current = data ? { id: user.id, papel: data.papel } : null;
+        setState({ loading: false, user, papel: data?.papel ?? null });
       };
 
       const { data } = await sb.auth.getSession();
@@ -48,7 +48,7 @@ export default function AuthProvider({ children }) {
         setTimeout(() => carregar(session), 0);
       });
       cancelar = () => sub.subscription.unsubscribe();
-    })().catch(() => vivo && setState({ loading: false, user: null, isAdmin: false }));
+    })().catch(() => vivo && setState({ loading: false, user: null, papel: null }));
 
     return () => {
       vivo = false;
@@ -67,6 +67,9 @@ export default function AuthProvider({ children }) {
     await sb.auth.signOut();
   }, []);
 
-  const value = useMemo(() => ({ ...state, signIn, signOut }), [state, signIn, signOut]);
+  const value = useMemo(
+    () => ({ ...state, isAdmin: state.papel === 'admin', isEquipe: Boolean(state.papel), signIn, signOut }),
+    [state, signIn, signOut],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

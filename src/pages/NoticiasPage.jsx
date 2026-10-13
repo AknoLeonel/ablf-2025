@@ -1,10 +1,12 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listNoticias } from '../lib/api';
+import { usePageTitle } from '../lib/usePageTitle';
 import { PageHeader, Container, QueryState } from '../components/common/ui';
 import NewsCard from '../components/common/NewsCard';
 
 export default function NoticiasPage() {
+  usePageTitle('Notícias', 'Últimas notícias da ABLF e das ligas de futsal do Brasil.');
   const noticias = useQuery({ queryKey: ['noticias'], queryFn: () => listNoticias() });
   return (
     <>

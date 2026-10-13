@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, AlertTriangle, Inbox, User, Shield } from 'lucide-react';
+import { AlertTriangle, Inbox, User, Shield } from 'lucide-react';
+import { Skeleton } from '../ui';
 import { iniciais } from '../../lib/format';
 
 export function PageHeader({ eyebrow, title, subtitle, children }) {
   return (
-    <header className="pt-28 pb-10 bg-ablf-card border-b border-gray-800 relative overflow-hidden">
+    <header className="pt-24 pb-6 md:pt-28 md:pb-10 bg-ablf-card border-b border-gray-800 relative overflow-hidden">
       <div className="absolute -top-10 right-0 text-[14rem] font-display font-bold text-white/5 leading-none select-none pointer-events-none hidden md:block">
         ABLF
       </div>
@@ -15,24 +16,27 @@ export function PageHeader({ eyebrow, title, subtitle, children }) {
             {eyebrow}
           </span>
         )}
-        <h1 className="text-white font-display text-5xl md:text-7xl font-black italic uppercase mt-1">
+        <h1 className="text-white font-display text-4xl sm:text-5xl md:text-7xl font-black italic uppercase mt-1 leading-[0.95]">
           {title}
         </h1>
-        {subtitle && <p className="text-gray-400 mt-3 max-w-2xl">{subtitle}</p>}
-        {children && <div className="mt-6">{children}</div>}
+        {subtitle && <p className="text-gray-400 mt-2 md:mt-3 max-w-2xl">{subtitle}</p>}
+        {children && <div className="mt-4 md:mt-6">{children}</div>}
       </div>
     </header>
   );
 }
 
 export function Container({ children, className = '' }) {
-  return <div className={`container mx-auto px-4 py-12 ${className}`}>{children}</div>;
+  return <div className={`container mx-auto px-4 py-8 md:py-12 ${className}`}>{children}</div>;
 }
 
 export function Loading({ label = 'Carregando…' }) {
   return (
-    <div role="status" className="flex items-center justify-center gap-3 py-16 text-gray-400">
-      <Loader2 className="animate-spin" size={20} /> {label}
+    <div role="status" aria-live="polite" className="py-4 space-y-3">
+      <span className="sr-only">{label}</span>
+      <Skeleton className="h-24" />
+      <Skeleton className="h-24" />
+      <Skeleton className="h-24 opacity-60" />
     </div>
   );
 }
@@ -112,12 +116,12 @@ export function Avatar({ src, nome, className = '' }) {
 export function CompeticaoPicker({ competicoes, atual, onChange }) {
   if (!competicoes?.length) return null;
   return (
-    <label className="inline-flex items-center gap-3 text-sm text-gray-400">
+    <label className="flex w-full sm:inline-flex sm:w-auto items-center gap-3 text-sm text-gray-400">
       <span className="uppercase tracking-wider font-bold">Competição</span>
       <select
         value={atual?.id ?? ''}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-ablf-green"
+        className="flex-1 min-w-0 min-h-11 bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-ablf-green"
       >
         {competicoes.map((c) => (
           <option key={c.id} value={c.id}>
@@ -131,7 +135,7 @@ export function CompeticaoPicker({ competicoes, atual, onChange }) {
 
 export function BackLink({ to, children }) {
   return (
-    <Link to={to} className="inline-block text-sm text-gray-400 hover:text-ablf-yellow transition-colors mb-4">
+    <Link to={to} className="inline-flex items-center min-h-10 text-sm text-gray-400 hover:text-ablf-yellow transition-colors mb-2">
       ← {children}
     </Link>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { whatsappLink } from '../constants';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 const WhatsAppButton = () => {
   return (
@@ -13,7 +14,7 @@ const WhatsAppButton = () => {
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay: 1, type: "spring" }}
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors group"
+      className={`fixed ${isSupabaseConfigured ? 'bottom-6 right-6 z-40 hidden xl:flex' : 'bottom-6 right-6 z-50 flex'} items-center justify-center w-14 h-14 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors group`}
     >
       <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
       <MessageCircle size={28} className="relative z-10" />

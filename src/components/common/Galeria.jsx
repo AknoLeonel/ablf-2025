@@ -3,17 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { listFotos } from '../../lib/api';
 import Lightbox from './Lightbox';
 
-export default function Galeria({ jogoId, jogadorId, timeId, titulo = 'Fotos' }) {
+export default function Galeria({ jogoId, jogadorId, timeId, titulo = 'Fotos', mensagemVazio }) {
   const [aberta, setAberta] = useState(null);
   const { data: fotos } = useQuery({
     queryKey: ['fotos', { jogoId, jogadorId, timeId }],
     queryFn: () => listFotos({ jogoId, jogadorId, timeId }),
   });
-  if (!fotos?.length) return null;
+  if (!fotos?.length) return mensagemVazio ? <p className="py-10 text-center text-gray-500">{mensagemVazio}</p> : null;
 
   return (
-    <section className="mt-12">
-      <h2 className="text-white font-display text-3xl font-bold uppercase mb-4">{titulo}</h2>
+    <section className={titulo ? 'mt-12' : ''}>
+      {titulo && <h2 className="text-white font-display text-3xl font-bold uppercase mb-4">{titulo}</h2>}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {fotos.map((f) => (
           <button

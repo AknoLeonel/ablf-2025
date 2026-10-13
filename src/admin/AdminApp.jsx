@@ -1,23 +1,35 @@
 import React, { useState } from 'react';
-import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
-import { ClipboardList, LogOut, Menu, X } from 'lucide-react';
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { CalendarDays, ClipboardList, Home, LogOut, Menu, Users } from 'lucide-react';
 import AuthProvider from './AuthProvider';
+import ToastProvider from './ToastProvider';
 import { useAuth } from './authContext';
+import Dashboard from './Dashboard';
+import Mesa from './Mesa';
 import ResourceManager from './ResourceManager';
-import Sumula from './Sumula';
 import { RESOURCES } from './resources';
+import { Button, Sheet } from '../components/ui';
+import { usePageTitle } from '../lib/usePageTitle';
 import logoAblf from '../assets/logo.png';
 
-const MENU = ['jogos', 'competicoes', 'inscricoes', 'times', 'jogadores', 'fotos', 'noticias', 'destaques', 'ligas', 'auditoria'];
+// Menu agrupado. `admin: true` = só administrador (mesário vê apenas Hoje e Jogos).
+const GRUPOS = [
+  { titulo: 'Operação', itens: [{ to: '/admin', rotulo: 'Hoje', end: true }, { to: '/admin/jogos', rotulo: 'Jogos' }] },
+  { titulo: 'Cadastros', admin: true, itens: ['competicoes', 'inscricoes', 'times', 'jogadores', 'ligas'].map((k) => ({ to: `/admin/${RESOURCES[k].path}`, rotulo: RESOURCES[k].titulo })) },
+  { titulo: 'Conteúdo', admin: true, itens: ['fotos', 'noticias', 'destaques', 'documentos'].map((k) => ({ to: `/admin/${RESOURCES[k].path}`, rotulo: RESOURCES[k].titulo })) },
+  { titulo: 'Gestão', admin: true, itens: ['filiacoes', 'auditoria'].map((k) => ({ to: `/admin/${RESOURCES[k].path}`, rotulo: RESOURCES[k].titulo })) },
+];
+const RECURSOS_ADMIN = Object.values(RESOURCES).filter((r) => r.path !== 'jogos');
 
 function Login() {
-  const { user, isAdmin, signIn, signOut } = useAuth();
+  usePageTitle('Entrar no painel');
+  const { user, isEquipe, signIn, signOut } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [busy, setBusy] = useState(false);
 
-  if (user && isAdmin) return <Navigate to="/admin" replace />;
+  if (user && isEquipe) return <Navigate to="/admin" replace />;
 
   const entrar = async (e) => {
     e.preventDefault();
@@ -31,102 +43,123 @@ function Login() {
       setBusy(false);
     }
   };
+  const campo = 'w-full min-h-12 mb-4 bg-ablf-surface border border-ablf-line text-white rounded-xl px-4 focus:outline-none focus:border-ablf-green';
 
   return (
-    <div className="min-h-screen bg-ablf-dark flex items-center justify-center px-4">
-      <form onSubmit={entrar} className="w-full max-w-sm p-8 bg-ablf-card border border-gray-800 rounded-2xl">
+    <div className="min-h-dvh bg-ablf-dark flex items-center justify-center px-4">
+      <form onSubmit={entrar} className="w-full max-w-sm p-6 sm:p-8 bg-ablf-card border border-ablf-line rounded-3xl">
         <img src={logoAblf} alt="ABLF" className="w-14 h-14 object-contain mx-auto mb-4" />
         <h1 className="text-center font-display text-3xl font-black italic uppercase text-white mb-6">Painel ABLF</h1>
-        {user && !isAdmin && (
-          <div role="alert" className="mb-4 p-3 text-sm rounded-lg border border-yellow-800 bg-yellow-950/40 text-yellow-200">
-            Esta conta ({user.email}) não tem permissão de administrador.{' '}
+        {user && !isEquipe && (
+          <div role="alert" className="mb-4 p-3 text-sm rounded-xl border border-yellow-800 bg-yellow-950/40 text-yellow-200">
+            Esta conta ({user.email}) não tem acesso ao painel.{' '}
             <button type="button" onClick={signOut} className="underline">Sair</button>
           </div>
         )}
-        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1" htmlFor="email">E-mail</label>
-        <input id="email" type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-ablf-green" />
-        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1" htmlFor="senha">Senha</label>
-        <input id="senha" type="password" required autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)}
-          className="w-full mb-4 bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-ablf-green" />
+        <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1.5" htmlFor="email">E-mail</label>
+        <input id="email" type="email" required autoComplete="username" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} className={campo} />
+        <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-1.5" htmlFor="senha">Senha</label>
+        <input id="senha" type="password" required autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} className={campo} />
         {erro && <p role="alert" className="mb-4 text-sm text-red-300">{erro}</p>}
-        <button type="submit" disabled={busy} className="w-full bg-ablf-yellow text-ablf-blue font-bold py-2.5 rounded-lg hover:bg-white disabled:opacity-50">
-          {busy ? 'Entrando…' : 'Entrar'}
-        </button>
-        <Link to="/" className="block text-center text-sm text-gray-500 hover:text-white mt-4">← Voltar ao site</Link>
+        <Button type="submit" size="lg" className="w-full" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</Button>
+        <Link to="/" className="block text-center text-sm text-gray-500 hover:text-white mt-4 min-h-10 leading-10">← Voltar ao site</Link>
       </form>
     </div>
   );
 }
 
+function Pagina({ recurso, readOnly }) {
+  usePageTitle(`${recurso.titulo} – Painel`);
+  const { isAdmin } = useAuth();
+  return (
+    <div className="max-w-6xl">
+      <h1 className="font-display text-4xl font-black italic uppercase text-white mb-5">{recurso.titulo}</h1>
+      <ResourceManager
+        key={recurso.path}
+        resource={recurso}
+        readOnly={readOnly || !isAdmin}
+        rowActions={recurso.path === 'jogos' ? (row) => (
+          <Link to={`/admin/jogos/${row.id}`} className="inline-flex items-center gap-1.5 min-h-11 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-ablf-green hover:bg-white/5">
+            <ClipboardList size={16} />Mesa
+          </Link>
+        ) : undefined}
+      />
+    </div>
+  );
+}
+
 function Painel() {
-  const { loading, user, isAdmin, signOut } = useAuth();
-  const [aberto, setAberto] = useState(false);
+  const { loading, user, isEquipe, isAdmin, papel, signOut } = useAuth();
+  const [menu, setMenu] = useState(false);
+  const { pathname } = useLocation();
+  usePageTitle('Painel');
 
-  if (loading) return <div className="min-h-screen bg-ablf-dark text-gray-400 flex items-center justify-center">Carregando…</div>;
-  if (!user || !isAdmin) return <Navigate to="/admin/login" replace />;
+  if (loading) return <div className="min-h-dvh bg-ablf-dark text-gray-400 flex items-center justify-center" role="status">Carregando…</div>;
+  if (!user || !isEquipe) return <Navigate to="/admin/login" replace />;
 
+  const grupos = GRUPOS.filter((g) => !g.admin || isAdmin);
   const itemClasse = ({ isActive }) =>
-    `block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-ablf-green text-white' : 'text-gray-300 hover:bg-gray-800'}`;
+    `flex items-center min-h-11 px-3 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-ablf-green text-white' : 'text-gray-300 hover:bg-white/5'}`;
+  const lista = (aoClicar) => (
+    <nav aria-label="Painel" className="space-y-5">
+      {grupos.map((g) => (
+        <div key={g.titulo}>
+          <div className="px-3 mb-1 text-[0.68rem] font-bold uppercase tracking-widest text-gray-500">{g.titulo}</div>
+          <div className="space-y-0.5">
+            {g.itens.map((i) => <NavLink key={i.to} to={i.to} end={i.end} onClick={aoClicar} className={itemClasse}>{i.rotulo}</NavLink>)}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+  const rodape = (
+    <div className="pt-4 border-t border-ablf-line text-xs text-gray-500 space-y-1">
+      <p className="truncate px-3">{user.email}</p>
+      <Link to="/" className="flex items-center min-h-10 px-3 rounded-lg hover:text-white">Ver o site</Link>
+      <button type="button" onClick={signOut} className="flex items-center gap-2 min-h-10 px-3 rounded-lg hover:text-white w-full"><LogOut size={14} /> Sair</button>
+    </div>
+  );
+  const tab = ({ isActive }) => `flex flex-1 flex-col items-center justify-center gap-0.5 min-h-14 text-[0.68rem] font-bold uppercase tracking-wide ${isActive ? 'text-ablf-yellow' : 'text-gray-400'}`;
+  const naMesa = /^\/admin\/jogos\/\d+/.test(pathname);
 
   return (
-    <div className="min-h-screen bg-ablf-dark text-white md:flex">
-      <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-gray-800">
-        <Link to="/admin" className="font-display text-xl font-bold">Painel ABLF</Link>
-        <button type="button" onClick={() => setAberto(!aberto)} aria-label={aberto ? 'Fechar menu' : 'Abrir menu'} aria-expanded={aberto} className="p-2 text-gray-300">
-          {aberto ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </header>
-
-      <aside className={`${aberto ? 'block' : 'hidden'} md:block md:w-60 md:min-h-screen shrink-0 border-r border-gray-800 bg-ablf-card p-4`}>
-        <Link to="/admin" className="hidden md:flex items-center gap-2 mb-6">
+    <div className="min-h-dvh bg-ablf-dark text-white md:flex">
+      <aside className="hidden md:flex md:flex-col md:w-64 md:min-h-dvh shrink-0 border-r border-ablf-line bg-ablf-card p-4 sticky top-0 self-start max-h-dvh overflow-y-auto">
+        <Link to="/admin" className="flex items-center gap-2 mb-6 px-1">
           <img src={logoAblf} alt="" className="w-9 h-9 object-contain" />
           <span className="font-display text-xl font-bold">Painel ABLF</span>
         </Link>
-        <nav aria-label="Painel" className="space-y-1">
-          {MENU.map((k) => (
-            <NavLink key={k} to={`/admin/${RESOURCES[k].path}`} onClick={() => setAberto(false)} className={itemClasse}>
-              {RESOURCES[k].titulo}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="mt-8 pt-4 border-t border-gray-800 text-xs text-gray-500 space-y-2">
-          <p className="truncate">{user.email}</p>
-          <Link to="/" className="block hover:text-white">Ver o site</Link>
-          <button type="button" onClick={signOut} className="flex items-center gap-1 hover:text-white"><LogOut size={14} /> Sair</button>
-        </div>
+        <div className="flex-1">{lista()}</div>
+        {rodape}
       </aside>
 
-      <main className="flex-1 min-w-0 p-4 md:p-8">
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between gap-3 px-4 h-14 border-b border-ablf-line bg-ablf-dark/95 backdrop-blur">
+        <Link to="/admin" className="flex items-center gap-2"><img src={logoAblf} alt="" className="w-8 h-8 object-contain" /><span className="font-display text-lg font-bold">Painel ABLF</span></Link>
+        <span className="text-[0.68rem] font-bold uppercase tracking-wider text-gray-400">{papel === 'admin' ? 'Admin' : 'Mesário'}</span>
+      </header>
+
+      <main className={`flex-1 min-w-0 p-4 md:p-8 ${naMesa ? '' : ''} pb-24 md:pb-8`}>
         <Routes>
-          <Route index element={<Navigate to="jogos" replace />} />
-          <Route path="jogos/:id" element={<Sumula />} />
-          {MENU.map((k) => {
-            const r = RESOURCES[k];
-            return (
-              <Route
-                key={k}
-                path={r.path}
-                element={
-                  <div>
-                    <h1 className="font-display text-4xl font-black italic uppercase mb-6">{r.titulo}</h1>
-                    <ResourceManager
-                      key={r.path}
-                      resource={r}
-                      rowActions={k === 'jogos' ? (row) => (
-                        <Link to={`/admin/jogos/${row.id}`} className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold uppercase text-ablf-green hover:text-white">
-                          <ClipboardList size={14} /> Súmula
-                        </Link>
-                      ) : undefined}
-                    />
-                  </div>
-                }
-              />
-            );
-          })}
+          <Route index element={<Dashboard />} />
+          <Route path="jogos" element={<Pagina recurso={RESOURCES.jogos} />} />
+          <Route path="jogos/:id" element={<Mesa />} />
+          {isAdmin && RECURSOS_ADMIN.map((r) => <Route key={r.path} path={r.path} element={<Pagina recurso={r} />} />)}
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </main>
+
+      <nav aria-label="Atalhos" className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-ablf-line bg-ablf-dark/95 backdrop-blur pb-safe">
+        <div className="flex">
+          <NavLink to="/admin" end className={tab}><Home size={22} aria-hidden="true" />Hoje</NavLink>
+          <NavLink to="/admin/jogos" className={tab}><CalendarDays size={22} aria-hidden="true" />Jogos</NavLink>
+          {isAdmin && <NavLink to="/admin/jogadores" className={tab}><Users size={22} aria-hidden="true" />Jogadores</NavLink>}
+          <button type="button" onClick={() => setMenu(true)} aria-haspopup="dialog" className="flex flex-1 flex-col items-center justify-center gap-0.5 min-h-14 text-[0.68rem] font-bold uppercase tracking-wide text-gray-400"><Menu size={22} aria-hidden="true" />Menu</button>
+        </div>
+      </nav>
+      <Sheet open={menu} onClose={() => setMenu(false)} title="Menu">
+        {lista(() => setMenu(false))}
+        <div className="mt-6">{rodape}</div>
+      </Sheet>
     </div>
   );
 }
@@ -134,10 +167,12 @@ function Painel() {
 export default function AdminApp() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="login" element={<Login />} />
-        <Route path="*" element={<Painel />} />
-      </Routes>
+      <ToastProvider>
+        <Routes>
+          <Route path="login" element={<Login />} />
+          <Route path="*" element={<Painel />} />
+        </Routes>
+      </ToastProvider>
     </AuthProvider>
   );
 }

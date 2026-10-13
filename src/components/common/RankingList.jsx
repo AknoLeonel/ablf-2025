@@ -8,7 +8,7 @@ export default function RankingList({ titulo, itens, campo, unidade }) {
   if (!itens?.length) return null;
   const [lider, ...resto] = itens;
   return (
-    <section aria-label={titulo} className="bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden">
+    <section aria-label={titulo} className="bg-ablf-surface border border-ablf-line rounded-2xl overflow-hidden">
       <h2 className="px-5 py-3 bg-ablf-blue/40 border-b border-gray-800 font-display text-2xl font-bold uppercase text-ablf-yellow">
         {titulo}
       </h2>
@@ -35,7 +35,7 @@ export default function RankingList({ titulo, itens, campo, unidade }) {
       <ol className="divide-y divide-gray-800">
         {resto.map((p, i) => (
           <li key={p.jogador_id}>
-            <Link to={entityPath('jogadores', p.jogador_id, p.nome)} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-900">
+            <Link to={entityPath('jogadores', p.jogador_id, p.nome)} className="flex items-center gap-3 px-5 py-3 min-h-14 hover:bg-gray-900">
               <span className="w-6 font-display text-xl text-gray-500">{i + 2}</span>
               <Avatar src={p.foto_url} nome={p.nome} className="w-9 h-9 rounded-full shrink-0" />
               <span className="flex-1 min-w-0">

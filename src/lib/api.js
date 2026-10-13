@@ -24,6 +24,7 @@ export async function fetchAll(montar) {
 
 const TIME_MIN = 'id, nome, escudo_url';
 const JOGO_SELECT = `id, competicao_id, rodada, fase, data_hora, local, status, gols_mandante, gols_visitante,
+  periodo_atual, tipo_fase, grupo,
   competicao:competicoes(id, nome, ano),
   mandante:times!mandante_id(${TIME_MIN}), visitante:times!visitante_id(${TIME_MIN})`;
 
@@ -54,7 +55,7 @@ export const getJogo = (id) =>
   run((sb) =>
     sb
       .from('jogos')
-      .select(`${JOGO_SELECT}, observacoes`)
+      .select(`${JOGO_SELECT}, observacoes, arbitro_principal, arbitro_auxiliar, anotador, sumula_fechada, fechada_em`)
       .eq('id', id)
       .maybeSingle(),
   );
@@ -63,7 +64,7 @@ export const listEventosJogo = (jogoId) =>
   run((sb) =>
     sb
       .from('eventos_jogo')
-      .select('id, tipo, minuto, periodo, time_id, jogador:jogadores(id, nome, apelido)')
+      .select('id, tipo, minuto, periodo, motivo, time_id, jogador:jogadores(id, nome, apelido)')
       .eq('jogo_id', jogoId)
       .order('periodo', { nullsFirst: false })
       .order('minuto', { nullsFirst: false })
@@ -82,6 +83,9 @@ export const getClassificacao = (competicaoId) =>
   run((sb) =>
     sb.from('v_classificacao').select('*').eq('competicao_id', competicaoId).order('posicao'),
   );
+
+export const getTimeClassificacao = (timeId) =>
+  run((sb) => sb.from('v_classificacao').select('*').eq('time_id', timeId));
 
 export const listTimes = () =>
   run((sb) => sb.from('times').select('id, nome, escudo_url, cidade, uf').order('nome'));
@@ -195,3 +199,50 @@ export const listNoticias = ({ limit } = {}) =>
 
 export const getNoticia = (id) =>
   run((sb) => sb.from('noticias').select('*').eq('id', id).eq('publicada', true).maybeSingle());
+
+/* ---------- Jogos em destaque (home / faixa ao vivo) ---------- */
+const inicioDoDia = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+};
+
+export const listJogosAoVivo = () =>
+  run((sb) => sb.from('jogos').select(JOGO_SELECT).eq('status', 'ao_vivo').order('data_hora').order('id'));
+
+export const listProximosJogos = (limit = 8) =>
+  run((sb) =>
+    sb
+      .from('jogos')
+      .select(JOGO_SELECT)
+      .in('status', ['agendado', 'adiado'])
+      .gte('data_hora', inicioDoDia())
+      .order('data_hora')
+      .order('id')
+      .limit(limit),
+  );
+
+export const listUltimosResultados = (limit = 8) =>
+  run((sb) =>
+    sb
+      .from('jogos')
+      .select(JOGO_SELECT)
+      .eq('status', 'encerrado')
+      .order('data_hora', { ascending: false, nullsFirst: false })
+      .order('id', { ascending: false })
+      .limit(limit),
+  );
+
+/* ---------- Documentos e filiação ---------- */
+export const listDocumentos = () =>
+  fetchAll((sb) =>
+    sb
+      .from('documentos')
+      .select('id, titulo, categoria, descricao, arquivo_url, tamanho_bytes, publicado_em, competicao:competicoes(id, nome, ano)')
+      .eq('publicado', true)
+      .order('publicado_em', { ascending: false })
+      .order('id'),
+  );
+
+export const enviarFiliacao = (dados) =>
+  run((sb) => sb.from('solicitacoes_filiacao').insert(dados));
