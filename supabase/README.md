@@ -2,7 +2,9 @@
 
 ## 1. Criar o projeto
 1. Crie um projeto em <https://supabase.com> (plano gratuito atende).
-2. Em **SQL Editor**, cole e execute `migrations/20261013000000_schema_inicial.sql`.
+2. Em **SQL Editor**, cole e execute **em ordem** (cada arquivo inteiro, sem nada selecionado):
+   1. `migrations/20261013000000_schema_inicial.sql`
+   2. `migrations/20261013120000_correcoes_revisao.sql` (exclusão segura, integridade da súmula e histórico de alterações)
 3. (Opcional) execute `demo_seed.sql` para ver o site com dados fictícios `[DEMO]`.
    O bloco de limpeza está no fim do arquivo.
 
@@ -47,6 +49,7 @@ para que só quem você criar consiga ter conta.
 | `noticias` | notícias da home e da página de notícias |
 | `destaques` | "craque da rodada" e destaques escolhidos à mão |
 | `admins` | quem pode editar |
+| `auditoria` | histórico automático de tudo que foi criado/alterado/excluído (tela **Histórico** no painel) |
 
 Calculado automaticamente (não precisa digitar): `v_classificacao`,
 `v_estatisticas_jogador_competicao`, `v_estatisticas_jogador` — só jogos **encerrados** contam.

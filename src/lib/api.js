@@ -7,8 +7,24 @@ async function run(build) {
   return data;
 }
 
+// O PostgREST devolve no máximo ~1000 linhas por consulta, sem avisar. Para listas que precisam
+// ser completas, busca em páginas até acabar. `montar(sb)` deve devolver uma consulta NOVA a cada
+// chamada, com ordem determinística (termine com .order('id')).
+const PAGINA = 500;
+export async function fetchAll(montar) {
+  const sb = await getSupabase();
+  const todas = [];
+  for (let de = 0; ; de += PAGINA) {
+    const { data, error } = await montar(sb).range(de, de + PAGINA - 1);
+    if (error) throw error;
+    todas.push(...data);
+    if (data.length < PAGINA) return todas;
+  }
+}
+
 const TIME_MIN = 'id, nome, escudo_url';
 const JOGO_SELECT = `id, competicao_id, rodada, fase, data_hora, local, status, gols_mandante, gols_visitante,
+  competicao:competicoes(id, nome, ano),
   mandante:times!mandante_id(${TIME_MIN}), visitante:times!visitante_id(${TIME_MIN})`;
 
 export const listCompeticoes = () =>
@@ -20,24 +36,25 @@ export const listCompeticoes = () =>
       .order('id', { ascending: false }),
   );
 
-export const listJogos = ({ competicaoId, timeId, limit } = {}) =>
-  run((sb) => {
-    let q = sb
-      .from('jogos')
-      .select(JOGO_SELECT)
-      .order('rodada', { ascending: true, nullsFirst: false })
-      .order('data_hora', { ascending: true, nullsFirst: false });
+export const listJogos = ({ competicaoId, timeId } = {}) =>
+  fetchAll((sb) => {
+    let q = sb.from('jogos').select(JOGO_SELECT);
+    // por competição: agrupado por rodada; por time: cronológico (mistura competições)
+    q = timeId
+      ? q.order('data_hora', { ascending: true, nullsFirst: false })
+      : q
+          .order('rodada', { ascending: true, nullsFirst: false })
+          .order('data_hora', { ascending: true, nullsFirst: false });
     if (competicaoId) q = q.eq('competicao_id', competicaoId);
     if (timeId) q = q.or(`mandante_id.eq.${timeId},visitante_id.eq.${timeId}`);
-    if (limit) q = q.limit(limit);
-    return q;
+    return q.order('id');
   });
 
 export const getJogo = (id) =>
   run((sb) =>
     sb
       .from('jogos')
-      .select(`${JOGO_SELECT}, observacoes, competicao:competicoes(id, nome, ano)`)
+      .select(`${JOGO_SELECT}, observacoes`)
       .eq('id', id)
       .maybeSingle(),
   );
@@ -79,14 +96,14 @@ export const getTime = (id) =>
   );
 
 export const listJogadores = ({ timeId } = {}) =>
-  run((sb) => {
+  fetchAll((sb) => {
     let q = sb
       .from('jogadores')
       .select('id, nome, apelido, foto_url, posicao, numero, time_id, ativo')
       .order('numero', { nullsFirst: false })
       .order('nome');
     if (timeId) q = q.eq('time_id', timeId);
-    return q;
+    return q.order('id');
   });
 
 export const getJogador = (id) =>
@@ -112,14 +129,15 @@ export const listEstatisticasPorCompeticao = (jogadorId) =>
   );
 
 export const listEventosJogador = (jogadorId) =>
-  run((sb) =>
+  fetchAll((sb) =>
     sb
       .from('eventos_jogo')
       .select(
         `id, tipo, minuto, jogo:jogos(id, data_hora, rodada, status, gols_mandante, gols_visitante,
           mandante:times!mandante_id(id, nome), visitante:times!visitante_id(id, nome))`,
       )
-      .eq('jogador_id', jogadorId),
+      .eq('jogador_id', jogadorId)
+      .order('id'),
   );
 
 // Ranking de uma competição por "gols", "assistencias", "amarelos"...
@@ -135,6 +153,7 @@ export const listRanking = ({ competicaoId, campo, limit = 5 }) =>
       .limit(limit),
   );
 
+// Destaques da competição escolhida + os sem competição (gerais).
 export const listDestaquesManuais = ({ competicaoId, limit = 6 } = {}) =>
   run((sb) => {
     let q = sb
@@ -146,7 +165,7 @@ export const listDestaquesManuais = ({ competicaoId, limit = 6 } = {}) =>
       .eq('publicado', true)
       .order('criado_em', { ascending: false })
       .limit(limit);
-    if (competicaoId) q = q.eq('competicao_id', competicaoId);
+    if (competicaoId) q = q.or(`competicao_id.eq.${competicaoId},competicao_id.is.null`);
     return q;
   });
 
@@ -167,10 +186,10 @@ export const listNoticias = ({ limit } = {}) =>
   run((sb) => {
     let q = sb
       .from('noticias')
-      .select('id, titulo, categoria, resumo, imagem_url, link_externo, publicada_em, conteudo')
+      .select('id, titulo, categoria, resumo, imagem_url, link_externo, publicada_em, tem_conteudo')
       .eq('publicada', true)
       .order('publicada_em', { ascending: false });
-    if (limit) q = q.limit(limit);
+    q = limit ? q.limit(limit) : q.limit(60);
     return q;
   });
 

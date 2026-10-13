@@ -26,8 +26,8 @@ function useNoticiasHome() {
         title: n.titulo,
         date: formatDataCurta(n.publicada_em),
         image: n.imagem_url,
-        to: n.conteudo ? `/noticias/${n.id}` : null,
-        href: n.conteudo ? null : n.link_externo,
+        to: n.tem_conteudo ? `/noticias/${n.id}` : null,
+        href: n.tem_conteudo ? null : n.link_externo,
       })),
     };
   }

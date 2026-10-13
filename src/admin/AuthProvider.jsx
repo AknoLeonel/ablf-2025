@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getSupabase } from '../lib/supabase';
 import { AuthContext } from './authContext';
 
@@ -6,6 +6,8 @@ import { AuthContext } from './authContext';
 // (A segurança de verdade está nas regras RLS do banco; isto só decide o que mostrar.)
 export default function AuthProvider({ children }) {
   const [state, setState] = useState({ loading: true, user: null, isAdmin: false });
+  const adminDe = useRef(null); // id do usuário já confirmado como admin
+  const sequencia = useRef(0); // descarta respostas antigas que chegam fora de ordem
 
   useEffect(() => {
     let vivo = true;
@@ -13,18 +15,35 @@ export default function AuthProvider({ children }) {
 
     (async () => {
       const sb = await getSupabase();
+
       const carregar = async (session) => {
+        const minha = ++sequencia.current;
         const user = session?.user ?? null;
-        let isAdmin = false;
-        if (user) {
-          const { data } = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
-          isAdmin = Boolean(data);
+        if (!user) {
+          adminDe.current = null;
+          if (vivo) setState({ loading: false, user: null, isAdmin: false });
+          return;
         }
-        if (vivo) setState({ loading: false, user, isAdmin });
+        // Já confirmado para este usuário (ex.: renovação de token): não consulta de novo.
+        if (adminDe.current === user.id) {
+          if (vivo && minha === sequencia.current) setState({ loading: false, user, isAdmin: true });
+          return;
+        }
+        const { data, error } = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+        if (!vivo || minha !== sequencia.current) return;
+        if (error) {
+          // Falha de rede/servidor NÃO é "não é admin": mantém o que já sabíamos e não derruba o painel.
+          setState((s) => ({ loading: false, user, isAdmin: s.isAdmin && s.user?.id === user.id }));
+          return;
+        }
+        adminDe.current = data ? user.id : null;
+        setState({ loading: false, user, isAdmin: Boolean(data) });
       };
+
       const { data } = await sb.auth.getSession();
       await carregar(data.session);
-      const { data: sub } = sb.auth.onAuthStateChange((_evento, session) => {
+      const { data: sub } = sb.auth.onAuthStateChange((evento, session) => {
+        if (evento === 'INITIAL_SESSION') return; // já tratado acima
         // adia para fora do callback (o SDK não aceita chamadas ao Supabase aqui dentro)
         setTimeout(() => carregar(session), 0);
       });

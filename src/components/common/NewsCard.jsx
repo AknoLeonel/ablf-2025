@@ -4,7 +4,7 @@ import { ArrowRight, Calendar } from 'lucide-react';
 import { formatDataCurta } from '../../lib/format';
 
 export default function NewsCard({ noticia }) {
-  const interno = Boolean(noticia.conteudo);
+  const interno = Boolean(noticia.tem_conteudo);
   const classe = 'group block';
   const corpo = (
     <>

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Trash2, X } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
+import { fetchAll } from '../lib/api';
 import FormField from './FormField';
 import { mensagemErro } from './erros';
 
@@ -37,6 +38,7 @@ function montarPayload(fields, valores, extras) {
 }
 
 const SEM_CAMPOS = [];
+const POR_PAGINA = 50;
 
 const chaveLinha = (row, pk) => pk.map((k) => row[k]).join(':');
 
@@ -51,20 +53,22 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
   const fields = useMemo(() => resource.fields.filter((f) => !hideFields.includes(f.name)), [resource, hideFields]);
   const [editando, setEditando] = useState(null); // null | 'novo' | row
   const [busca, setBusca] = useState('');
+  const [pagina, setPagina] = useState(0);
   const [erro, setErro] = useState('');
 
   const queryKey = ['admin', resource.table, filter ?? null];
   const lista = useQuery({
     queryKey,
-    queryFn: async () => {
-      const sb = await getSupabase();
-      let q = sb.from(resource.table).select(resource.select ?? '*');
-      for (const [col, val] of Object.entries(filter ?? {})) q = q.eq(col, val);
-      for (const [col, asc] of resource.order ?? [['id', false]]) q = q.order(col, { ascending: asc });
-      const { data, error } = await q;
-      if (error) throw error;
-      return data;
-    },
+    // fetchAll busca em páginas: nada é cortado nas 1000 linhas do PostgREST
+    queryFn: () =>
+      fetchAll((sb) => {
+        let q = sb.from(resource.table).select(resource.select ?? '*');
+        for (const [col, val] of Object.entries(filter ?? {})) q = q.eq(col, val);
+        for (const [col, asc] of resource.order ?? [['id', false]]) q = q.order(col, { ascending: asc });
+        // desempate estável para a paginação (tabelas sem coluna id usam a chave composta)
+        for (const k of pk) q = q.order(k);
+        return q;
+      }),
   });
 
   const aposMutar = () => {
@@ -107,7 +111,10 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
     );
   }, [lista.data, busca, resource.columns]);
 
-  const podeEditar = resource.canEdit !== false;
+  const podeEditar = resource.canEdit !== false && !resource.readOnly;
+  const totalPaginas = Math.max(1, Math.ceil(linhas.length / POR_PAGINA));
+  const paginaAtual = Math.min(pagina, totalPaginas - 1);
+  const visiveis = linhas.slice(paginaAtual * POR_PAGINA, (paginaAtual + 1) * POR_PAGINA);
 
   return (
     <div>
@@ -115,18 +122,20 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
         <input
           type="search"
           value={busca}
-          onChange={(e) => setBusca(e.target.value)}
+          onChange={(e) => { setBusca(e.target.value); setPagina(0); }}
           placeholder="Buscar…"
           aria-label={`Buscar em ${resource.titulo}`}
           className="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm w-full sm:w-64 focus:outline-none focus:border-ablf-green"
         />
-        <button
-          type="button"
-          onClick={() => { setErro(''); setEditando('novo'); }}
-          className="inline-flex items-center gap-2 bg-ablf-green hover:bg-green-600 text-white font-bold text-sm px-4 py-2 rounded-lg"
-        >
-          <Plus size={16} /> Novo
-        </button>
+        {!resource.readOnly && (
+          <button
+            type="button"
+            onClick={() => { setErro(''); setEditando('novo'); }}
+            className="inline-flex items-center gap-2 bg-ablf-green hover:bg-green-600 text-white font-bold text-sm px-4 py-2 rounded-lg"
+          >
+            <Plus size={16} /> Novo
+          </button>
+        )}
       </div>
 
       {erro && <div role="alert" className="mb-4 p-3 rounded-lg border border-red-900/60 bg-red-950/30 text-red-200 text-sm">{erro}</div>}
@@ -160,7 +169,7 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
               {linhas.length === 0 && (
                 <tr><td colSpan={resource.columns.length + 1} className="py-8 text-center text-gray-500">Nenhum registro.</td></tr>
               )}
-              {linhas.map((row) => (
+              {visiveis.map((row) => (
                 <tr key={chaveLinha(row, pk)} className="border-t border-gray-800 hover:bg-gray-900/60">
                   {resource.columns.map((c) => (
                     <td key={c.key} className="py-2 px-3 text-gray-200 align-middle">
@@ -173,19 +182,30 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
                       {podeEditar && (
                         <button type="button" onClick={() => { setErro(''); setEditando(row); }} aria-label="Editar" className="p-2 text-gray-400 hover:text-ablf-yellow"><Pencil size={16} /></button>
                       )}
-                      <button
-                        type="button"
-                        aria-label="Excluir"
-                        disabled={apagar.isPending}
-                        onClick={() => window.confirm(`Excluir este registro de ${resource.titulo}? Isso não pode ser desfeito.`) && apagar.mutate(row)}
-                        className="p-2 text-gray-400 hover:text-red-400"
-                      ><Trash2 size={16} /></button>
+                      {!resource.readOnly && (
+                        <button
+                          type="button"
+                          aria-label="Excluir"
+                          disabled={apagar.isPending}
+                          onClick={() => window.confirm(`Excluir este registro de ${resource.titulo}?\n\n${resource.avisoExclusao ?? 'Isso não pode ser desfeito pelo painel (fica apenas no histórico).'}`) && apagar.mutate(row)}
+                          className="p-2 text-gray-400 hover:text-red-400"
+                        ><Trash2 size={16} /></button>
+                      )}
                     </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {lista.isSuccess && linhas.length > POR_PAGINA && (
+        <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+          <span>{linhas.length} registros · página {paginaAtual + 1} de {totalPaginas}</span>
+          <span className="inline-flex gap-2">
+            <button type="button" disabled={paginaAtual === 0} onClick={() => setPagina(paginaAtual - 1)} className="px-3 py-1.5 rounded border border-gray-700 disabled:opacity-40 hover:text-white">Anterior</button>
+            <button type="button" disabled={paginaAtual >= totalPaginas - 1} onClick={() => setPagina(paginaAtual + 1)} className="px-3 py-1.5 rounded border border-gray-700 disabled:opacity-40 hover:text-white">Próxima</button>
+          </span>
         </div>
       )}
     </div>

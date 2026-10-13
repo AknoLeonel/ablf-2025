@@ -8,7 +8,7 @@ import Sumula from './Sumula';
 import { RESOURCES } from './resources';
 import logoAblf from '../assets/logo.png';
 
-const MENU = ['jogos', 'competicoes', 'inscricoes', 'times', 'jogadores', 'fotos', 'noticias', 'destaques', 'ligas'];
+const MENU = ['jogos', 'competicoes', 'inscricoes', 'times', 'jogadores', 'fotos', 'noticias', 'destaques', 'ligas', 'auditoria'];
 
 function Login() {
   const { user, isAdmin, signIn, signOut } = useAuth();
@@ -111,6 +111,7 @@ function Painel() {
                   <div>
                     <h1 className="font-display text-4xl font-black italic uppercase mb-6">{r.titulo}</h1>
                     <ResourceManager
+                      key={r.path}
                       resource={r}
                       rowActions={k === 'jogos' ? (row) => (
                         <Link to={`/admin/jogos/${row.id}`} className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold uppercase text-ablf-green hover:text-white">

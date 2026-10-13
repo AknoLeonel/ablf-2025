@@ -41,7 +41,7 @@ export default function TimePage() {
             <QueryState query={jogos} emptyText="Nenhum jogo deste time ainda.">
               {(lista) => (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {lista.map((j) => <JogoCard key={j.id} jogo={j} />)}
+                  {lista.map((j) => <JogoCard key={j.id} jogo={j} mostrarCompeticao />)}
                 </div>
               )}
             </QueryState>

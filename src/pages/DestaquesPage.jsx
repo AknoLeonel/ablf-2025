@@ -32,7 +32,11 @@ function Rankings({ competicaoId }) {
 
 export default function DestaquesPage() {
   const { query: compQuery, competicoes, atual, setAtual } = useCompeticao();
-  const manuais = useQuery({ queryKey: ['destaques-manuais'], queryFn: () => listDestaquesManuais({ limit: 8 }) });
+  const manuais = useQuery({
+    queryKey: ['destaques-manuais', atual?.id],
+    queryFn: () => listDestaquesManuais({ competicaoId: atual.id, limit: 8 }),
+    enabled: Boolean(atual),
+  });
 
   return (
     <>

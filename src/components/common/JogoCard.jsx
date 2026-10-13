@@ -11,7 +11,7 @@ const BADGE = {
   cancelado: 'bg-red-950 text-red-300',
 };
 
-export default function JogoCard({ jogo }) {
+export default function JogoCard({ jogo, mostrarCompeticao = false }) {
   const placar = jogo.gols_mandante != null && jogo.gols_visitante != null;
   return (
     <Link
@@ -37,6 +37,11 @@ export default function JogoCard({ jogo }) {
           <span className="font-display text-xl font-bold text-white uppercase leading-tight truncate">{jogo.visitante.nome}</span>
         </div>
       </div>
+      {mostrarCompeticao && jogo.competicao && (
+        <div className="mt-3 text-xs text-gray-500 text-center uppercase tracking-wider">
+          {jogo.competicao.nome} ({jogo.competicao.ano}){jogo.rodada ? ` · Rodada ${jogo.rodada}` : ''}
+        </div>
+      )}
       {jogo.fase && <div className="mt-3 text-xs text-gray-500 text-center uppercase tracking-wider">{jogo.fase}</div>}
     </Link>
   );

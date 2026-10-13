@@ -20,6 +20,7 @@ const cidade = [
 
 export const RESOURCES = {
   jogos: {
+    avisoExclusao: 'Isso apaga também a súmula deste jogo (lances e escalação). A alteração fica registrada no Histórico, mas o painel não restaura.',
     path: 'jogos',
     titulo: 'Jogos',
     singular: 'jogo',
@@ -49,6 +50,7 @@ export const RESOURCES = {
     ],
   },
   competicoes: {
+    avisoExclusao: 'Só é possível excluir uma competição sem jogos. As inscrições dos times serão removidas.',
     path: 'competicoes',
     titulo: 'Competições',
     singular: 'competição',
@@ -92,6 +94,7 @@ export const RESOURCES = {
     ],
   },
   times: {
+    avisoExclusao: 'Só é possível excluir um time que não tem jogos.',
     path: 'times',
     titulo: 'Times',
     singular: 'time',
@@ -111,6 +114,7 @@ export const RESOURCES = {
     ],
   },
   jogadores: {
+    avisoExclusao: 'Para preservar o histórico de jogos, prefira desmarcar "Ativo". Jogador com lances ou escalações não pode ser excluído.',
     path: 'jogadores',
     titulo: 'Jogadores',
     singular: 'jogador',
@@ -226,6 +230,32 @@ export const RESOURCES = {
       { name: 'logo_url', label: 'Logo', type: 'image', folder: 'ligas', maxSize: 512, wide: true },
     ],
   },
+};
+
+const ACOES = { INSERT: 'Criou', UPDATE: 'Alterou', DELETE: 'Excluiu' };
+const NOME_TABELA = {
+  jogos: 'jogo', competicoes: 'competição', competicao_times: 'inscrição', times: 'time', jogadores: 'jogador',
+  eventos_jogo: 'lance', escalacoes: 'escalação', fotos: 'foto', noticias: 'notícia', destaques: 'destaque', ligas: 'liga',
+};
+const resumo = (r) => {
+  const d = r.depois ?? r.antes ?? {};
+  return d.nome || d.titulo || d.legenda || d.tipo || (d.mandante_id ? `jogo #${d.id}` : '') || `#${r.registro_id ?? ''}`;
+};
+
+RESOURCES.auditoria = {
+  path: 'historico',
+  titulo: 'Histórico',
+  singular: 'registro',
+  table: 'auditoria',
+  readOnly: true,
+  order: [['criado_em', false]],
+  columns: [
+    { key: 'criado_em', label: 'Quando', render: (r) => new Date(r.criado_em).toLocaleString('pt-BR') },
+    { key: 'acao', label: 'Ação', render: (r) => ACOES[r.acao] },
+    { key: 'tabela', label: 'O quê', render: (r) => NOME_TABELA[r.tabela] ?? r.tabela },
+    { key: 'resumo', label: 'Registro', render: resumo },
+  ],
+  fields: [],
 };
 
 // Evento da súmula – usado dentro da página do jogo (jogo_id e time_id são preenchidos sozinhos).
