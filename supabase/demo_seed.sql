@@ -17,7 +17,7 @@ select c.id, t.id from competicoes c, times t where c.nome = '[DEMO] Copa Exempl
 
 -- 3 jogadores por time
 insert into jogadores (time_id, nome, apelido, ano_nascimento, posicao, pe_dominante, altura_cm, peso_kg, numero)
-select t.id, p.nome || ' ' || t.nome, p.apelido, p.ano, p.posicao, p.pe, p.altura, p.peso, p.numero
+select t.id, p.nome || ' ' || replace(t.nome, '[DEMO] ', ''), p.apelido, p.ano, p.posicao, p.pe, p.altura, p.peso, p.numero
 from times t
 cross join (values
   ('[DEMO] Atleta A', 'Ala',   1998, 'ala',     'direito',   175, 70.0, 7),
@@ -91,6 +91,9 @@ insert into destaques (tipo, jogador_id, competicao_id, rodada, texto)
 select 'craque_da_rodada', p.id, c.id, 1, 'Dois gols e uma assistência na vitória por 4 a 2.'
 from jogadores p, competicoes c, times t
 where p.time_id = t.id and t.nome = '[DEMO] Águias FC' and p.apelido = 'Pivô' and c.nome = '[DEMO] Copa Exemplo';
+
+-- os apelidos acima só serviram para montar a súmula; remove para o site mostrar o nome
+update jogadores set apelido = null where nome like '[DEMO]%';
 
 insert into noticias (titulo, categoria, resumo, publicada)
 values ('[DEMO] Começa a Copa Exemplo', 'Campeonato', 'Notícia de demonstração.', true);

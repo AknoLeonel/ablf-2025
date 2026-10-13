@@ -1,29 +1,47 @@
-import React from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import LogoMarquee from './components/LogoMarquee';
-import Features from './components/Features';
-import NewsSection from './components/NewsSection'; // Novo
-import Transparency from './components/Transparency';
-import InstagramFeed from './components/InstagramFeed'; // Novo
-import Footer from './components/Footer';
-import WhatsAppButton from './components/WhatsAppButton';
+import React, { Suspense, lazy } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import { Loading } from './components/common/ui';
+import { isSupabaseConfigured } from './lib/supabase';
+
+// Páginas que dependem do banco: carregadas sob demanda (a home continua leve).
+const JogosPage = lazy(() => import('./pages/JogosPage'));
+const JogoPage = lazy(() => import('./pages/JogoPage'));
+const TabelaPage = lazy(() => import('./pages/TabelaPage'));
+const TimesPage = lazy(() => import('./pages/TimesPage'));
+const TimePage = lazy(() => import('./pages/TimePage'));
+const JogadorPage = lazy(() => import('./pages/JogadorPage'));
+const DestaquesPage = lazy(() => import('./pages/DestaquesPage'));
+const NoticiasPage = lazy(() => import('./pages/NoticiasPage'));
+const NoticiaPage = lazy(() => import('./pages/NoticiaPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 function App() {
   return (
-    <div className="min-h-screen bg-ablf-dark text-white selection:bg-ablf-yellow selection:text-ablf-dark overflow-x-hidden font-sans">
-      <Navbar />
-      <WhatsAppButton />
-      <main>
-        <Hero />
-        <LogoMarquee />
-        <NewsSection /> {/* Notícias logo após o impacto inicial */}
-        <Features />
-        <Transparency />
-        <InstagramFeed /> {/* Finaliza com social antes do rodapé */}
-      </main>
-      <Footer />
-    </div>
+    <Suspense fallback={<div className="min-h-screen bg-ablf-dark pt-32"><Loading /></div>}>
+      <Routes>
+        {isSupabaseConfigured && <Route path="admin/*" element={<AdminApp />} />}
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          {isSupabaseConfigured && (
+            <>
+              <Route path="jogos" element={<JogosPage />} />
+              <Route path="jogos/:id" element={<JogoPage />} />
+              <Route path="tabela" element={<TabelaPage />} />
+              <Route path="times" element={<TimesPage />} />
+              <Route path="times/:id" element={<TimePage />} />
+              <Route path="jogadores/:id" element={<JogadorPage />} />
+              <Route path="destaques" element={<DestaquesPage />} />
+              <Route path="noticias" element={<NoticiasPage />} />
+              <Route path="noticias/:id" element={<NoticiaPage />} />
+            </>
+          )}
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 
