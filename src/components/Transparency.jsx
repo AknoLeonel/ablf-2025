@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, X, ZoomIn, CheckCircle, Download, ExternalLink, ShieldCheck, DollarSign } from 'lucide-react';
@@ -8,6 +8,14 @@ import docImage from '../assets/transparencia.jpeg';
 
 const Transparency = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Esc fecha o lightbox
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const onKeyDown = (e) => { if (e.key === 'Escape') setIsModalOpen(false); };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isModalOpen]);
 
   return (
     <section id="transparencia" className="py-24 bg-ablf-card relative clip-diagonal">
@@ -152,7 +160,9 @@ const Transparency = () => {
                 </div>
                 
                 {/* Container da Imagem com efeito de Zoom */}
-                <div 
+                <button
+                  type="button"
+                  aria-label="Ampliar documento de transparência"
                   className="relative flex-grow min-h-[300px] w-full bg-black rounded-lg overflow-hidden cursor-pointer border border-gray-800 group-hover:border-ablf-yellow transition-colors"
                   onClick={() => setIsModalOpen(true)}
                 >
@@ -168,7 +178,7 @@ const Transparency = () => {
                         <ZoomIn size={18} /> Ampliar Documento
                       </div>
                    </div>
-                </div>
+                </button>
 
                 <div className="mt-4 space-y-3">
                   <div className="flex justify-between text-sm border-b border-gray-800 pb-2">
@@ -199,10 +209,18 @@ const Transparency = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Documento original ampliado"
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
             onClick={() => setIsModalOpen(false)}
           >
-            <button className="absolute top-6 right-6 text-white hover:text-ablf-yellow p-2">
+            <button
+              type="button"
+              autoFocus
+              aria-label="Fechar"
+              className="absolute top-6 right-6 text-white hover:text-ablf-yellow p-2"
+            >
               <X size={40} />
             </button>
             <motion.img 

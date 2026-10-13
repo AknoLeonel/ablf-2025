@@ -17,9 +17,13 @@ import instagram6 from '../assets/instagram6.png';
 export const COMPANY_INFO = {
   name: "Associação Brasileira de Ligas de Futsal",
   acronym: "ABLF",
-  whatsapp: "5511999999999", 
+  // TODO: número placeholder. Defina o número real em VITE_WHATSAPP_NUMBER (formato 5511999999999).
+  whatsapp: import.meta.env.VITE_WHATSAPP_NUMBER || "5511999999999",
   instagram: "https://instagram.com/ablfoficial",
 };
+
+export const whatsappLink = (message) =>
+  `https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(message)}`;
 
 export const TRANSPARENCY_STATS = [
   { 

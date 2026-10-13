@@ -1,13 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
-import { COMPANY_INFO } from '../constants';
+import { whatsappLink } from '../constants';
 
 const WhatsAppButton = () => {
   return (
     <motion.a
-      href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=Olá, vim pelo site da ABLF`}
+      href={whatsappLink('Olá, vim pelo site da ABLF')}
       target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Falar com a ABLF pelo WhatsApp"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay: 1, type: "spring" }}

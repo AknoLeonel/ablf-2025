@@ -24,7 +24,7 @@ const InstagramFeed = () => {
 
         {/* Grid de Imagens (Simulação do Feed) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-          {INSTAGRAM_FEED.map((item, i) => (
+          {INSTAGRAM_FEED.map((item) => (
             <a 
               key={item.id} 
               href={COMPANY_INFO.instagram} 
@@ -34,7 +34,9 @@ const InstagramFeed = () => {
             >
               <img 
                 src={item.img} 
-                alt="Instagram Post" 
+                alt="Publicação do Instagram da ABLF"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               {/* Overlay no Hover */}

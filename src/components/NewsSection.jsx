@@ -5,7 +5,7 @@ import { NEWS_POSTS } from '../constants';
 
 const NewsSection = () => {
   return (
-    <section id="noticias" className="py-24 bg-ablf-darkXS relative overflow-hidden">
+    <section id="noticias" className="py-24 bg-ablf-dark relative overflow-hidden">
       {/* Background Decorativo */}
       <div className="absolute top-0 right-0 w-2/3 h-full bg-ablf-card skew-x-[-12deg] translate-x-1/3 z-0"></div>
       
@@ -45,7 +45,9 @@ const NewsSection = () => {
                 <div className="absolute inset-0 bg-ablf-blue/30 group-hover:bg-transparent transition-colors z-10"></div>
                 <img 
                   src={post.image} 
-                  alt={post.title} 
+                  alt={post.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4 z-20 bg-ablf-yellow text-ablf-dark px-3 py-1 font-bold text-xs uppercase skew-x-[-10deg]">
