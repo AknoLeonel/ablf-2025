@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="flex justify-center space-x-4 mb-8">
            <a href="mailto:contato@ablf.com.br" aria-label="Enviar e-mail para a ABLF" className="p-2 bg-gray-800 rounded-full hover:bg-ablf-yellow text-white"><Mail size={20} /></a>
         </div>
-        <p className="text-gray-600 text-sm">&copy; {new Date().getFullYear()} ABLF - Todos os direitos reservados.</p>
+        <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} ABLF - Todos os direitos reservados.</p>
       </div>
     </footer>
   );

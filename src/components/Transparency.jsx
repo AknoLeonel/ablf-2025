@@ -29,7 +29,7 @@ const Transparency = () => {
             </h2>
           </div>
           <div className="text-right mt-6 md:mt-0">
-             <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-900/30 border border-ablf-green/30 rounded-full text-ablf-green text-sm font-bold mb-2">
+             <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-900/30 border border-ablf-green/30 rounded-full text-green-400 text-sm font-bold mb-2">
                 <CheckCircle size={14} />
                 <span>Auditoria 2025 Aprovada</span>
              </div>

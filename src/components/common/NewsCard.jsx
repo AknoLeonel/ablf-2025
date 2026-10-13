@@ -17,8 +17,8 @@ export default function NewsCard({ noticia }) {
           <div className="absolute top-4 left-4 bg-ablf-yellow text-ablf-dark px-3 py-1 font-bold text-xs uppercase">{noticia.categoria}</div>
         )}
       </div>
-      <div className="flex items-center gap-2 text-gray-500 text-sm mb-2 font-mono"><Calendar size={14} />{formatDataCurta(noticia.publicada_em)}</div>
-      <h3 className="text-2xl font-display font-bold text-white leading-tight group-hover:text-ablf-green transition-colors uppercase">{noticia.titulo}</h3>
+      <div className="flex items-center gap-2 text-gray-400 text-sm mb-2 font-mono"><Calendar size={14} />{formatDataCurta(noticia.publicada_em)}</div>
+      <h2 className="text-2xl font-display font-bold text-white leading-tight group-hover:text-ablf-green transition-colors uppercase">{noticia.titulo}</h2>
       {noticia.resumo && <p className="mt-2 text-sm text-gray-400 line-clamp-3">{noticia.resumo}</p>}
       {(interno || noticia.link_externo) && (
         <div className="mt-3 flex items-center gap-2 text-ablf-green font-bold text-sm uppercase">Ler matéria <ArrowRight size={16} /></div>

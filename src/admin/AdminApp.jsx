@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { CalendarDays, ClipboardList, Home, LogOut, Menu, Users } from 'lucide-react';
 import AuthProvider from './AuthProvider';
 import ToastProvider from './ToastProvider';
@@ -62,7 +62,7 @@ function Login() {
         <input id="senha" type="password" required autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} className={campo} />
         {erro && <p role="alert" className="mb-4 text-sm text-red-300">{erro}</p>}
         <Button type="submit" size="lg" className="w-full" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</Button>
-        <Link to="/" className="block text-center text-sm text-gray-500 hover:text-white mt-4 min-h-10 leading-10">← Voltar ao site</Link>
+        <Link to="/" className="block text-center text-sm text-gray-400 hover:text-white mt-4 min-h-10 leading-10">← Voltar ao site</Link>
       </form>
     </div>
   );
@@ -91,7 +91,6 @@ function Pagina({ recurso, readOnly }) {
 function Painel() {
   const { loading, user, isEquipe, isAdmin, papel, signOut } = useAuth();
   const [menu, setMenu] = useState(false);
-  const { pathname } = useLocation();
   usePageTitle('Painel');
 
   if (loading) return <div className="min-h-dvh bg-ablf-dark text-gray-400 flex items-center justify-center" role="status">Carregando…</div>;
@@ -99,12 +98,12 @@ function Painel() {
 
   const grupos = GRUPOS.filter((g) => !g.admin || isAdmin);
   const itemClasse = ({ isActive }) =>
-    `flex items-center min-h-11 px-3 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-ablf-green text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    `flex items-center min-h-11 px-3 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-green-700 text-white' : 'text-gray-300 hover:bg-white/5'}`;
   const lista = (aoClicar) => (
     <nav aria-label="Painel" className="space-y-5">
       {grupos.map((g) => (
         <div key={g.titulo}>
-          <div className="px-3 mb-1 text-[0.68rem] font-bold uppercase tracking-widest text-gray-500">{g.titulo}</div>
+          <div className="px-3 mb-1 text-[0.68rem] font-bold uppercase tracking-widest text-gray-400">{g.titulo}</div>
           <div className="space-y-0.5">
             {g.itens.map((i) => <NavLink key={i.to} to={i.to} end={i.end} onClick={aoClicar} className={itemClasse}>{i.rotulo}</NavLink>)}
           </div>
@@ -113,14 +112,13 @@ function Painel() {
     </nav>
   );
   const rodape = (
-    <div className="pt-4 border-t border-ablf-line text-xs text-gray-500 space-y-1">
+    <div className="pt-4 border-t border-ablf-line text-xs text-gray-400 space-y-1">
       <p className="truncate px-3">{user.email}</p>
       <Link to="/" className="flex items-center min-h-10 px-3 rounded-lg hover:text-white">Ver o site</Link>
       <button type="button" onClick={signOut} className="flex items-center gap-2 min-h-10 px-3 rounded-lg hover:text-white w-full"><LogOut size={14} /> Sair</button>
     </div>
   );
   const tab = ({ isActive }) => `flex flex-1 flex-col items-center justify-center gap-0.5 min-h-14 text-[0.68rem] font-bold uppercase tracking-wide ${isActive ? 'text-ablf-yellow' : 'text-gray-400'}`;
-  const naMesa = /^\/admin\/jogos\/\d+/.test(pathname);
 
   return (
     <div className="min-h-dvh bg-ablf-dark text-white md:flex">
@@ -138,7 +136,7 @@ function Painel() {
         <span className="text-[0.68rem] font-bold uppercase tracking-wider text-gray-400">{papel === 'admin' ? 'Admin' : 'Mesário'}</span>
       </header>
 
-      <main className={`flex-1 min-w-0 p-4 md:p-8 ${naMesa ? '' : ''} pb-24 md:pb-8`}>
+      <main className="flex-1 min-w-0 p-4 md:p-8 pb-24 md:pb-8">
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="jogos" element={<Pagina recurso={RESOURCES.jogos} />} />

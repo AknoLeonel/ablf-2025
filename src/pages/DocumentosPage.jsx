@@ -34,11 +34,11 @@ export default function DocumentosPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <Badge tone="info">{CATEGORIAS_DOC[d.categoria] ?? d.categoria}</Badge>
-                          {d.competicao && <span className="text-xs text-gray-500">{d.competicao.nome}</span>}
+                          {d.competicao && <span className="text-xs text-gray-400">{d.competicao.nome}</span>}
                         </div>
                         <h2 className="text-white font-bold leading-snug break-words">{d.titulo}</h2>
                         {d.descricao && <p className="text-sm text-gray-400 mt-0.5 line-clamp-2">{d.descricao}</p>}
-                        <p className="text-xs text-gray-500 mt-1">{formatDataCurta(d.publicado_em)}{d.tamanho_bytes ? ` · ${formatTamanho(d.tamanho_bytes)}` : ''}</p>
+                        <p className="text-xs text-gray-400 mt-1">{formatDataCurta(d.publicado_em)}{d.tamanho_bytes ? ` · ${formatTamanho(d.tamanho_bytes)}` : ''}</p>
                       </div>
                       <Button as="a" href={d.arquivo_url} target="_blank" rel="noopener noreferrer" variant="secondary" size="sm" aria-label={`Baixar ${d.titulo}`}>
                         <Download size={16} /><span className="hidden sm:inline">Baixar</span>

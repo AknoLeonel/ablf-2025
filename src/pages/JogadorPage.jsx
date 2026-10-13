@@ -12,12 +12,11 @@ import { PES, POSICOES, TIPOS_EVENTO, entityPath, media, nomeJogador, parseEntit
 function Fato({ icone: Icone, rotulo, valor }) {
   if (valor == null || valor === '') return null;
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-ablf-line bg-ablf-surface">
-      <Icone size={18} className="text-ablf-yellow shrink-0" aria-hidden="true" />
-      <div className="min-w-0">
-        <dt className="text-[0.68rem] uppercase tracking-wider text-gray-500">{rotulo}</dt>
-        <dd className="text-white font-medium truncate">{valor}</dd>
-      </div>
+    <div className="p-3 rounded-xl border border-ablf-line bg-ablf-surface min-w-0">
+      <dt className="flex items-center gap-2 text-[0.68rem] uppercase tracking-wider text-gray-400">
+        <Icone size={14} className="text-ablf-yellow shrink-0" aria-hidden="true" />{rotulo}
+      </dt>
+      <dd className="mt-0.5 text-white font-medium truncate">{valor}</dd>
     </div>
   );
 }
@@ -59,7 +58,7 @@ export default function JogadorPage() {
                   <div className="min-w-0">
                     <span className="text-ablf-yellow font-display uppercase tracking-widest text-sm font-bold">Ficha técnica</span>
                     <h1 className="text-white font-display text-4xl sm:text-5xl md:text-6xl font-black italic uppercase leading-[0.95] break-words">{nomeJogador(j)}</h1>
-                    {j.apelido && <p className="text-gray-500 mt-1">{j.nome}</p>}
+                    {j.apelido && <p className="text-gray-400 mt-1">{j.nome}</p>}
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       {j.posicao && <Badge tone="success">{POSICOES[j.posicao]}</Badge>}
                       {!j.ativo && <Badge tone="warn">Inativo</Badge>}
@@ -110,7 +109,7 @@ export default function JogadorPage() {
                         <tbody>
                           {porCompeticao.data.map((s) => (
                             <tr key={s.competicao_id} className="border-b border-ablf-line/60 last:border-0">
-                              <td className="py-3 px-4 text-white min-w-[10rem]">{s.competicao?.nome} <span className="text-gray-500">({s.competicao?.ano})</span></td>
+                              <td className="py-3 px-4 text-white min-w-[10rem]">{s.competicao?.nome} <span className="text-gray-400">({s.competicao?.ano})</span></td>
                               <td className="py-3 px-3 text-center text-gray-300">{s.jogos}</td>
                               <td className="py-3 px-3 text-center font-bold text-ablf-yellow">{s.gols}</td>
                               <td className="py-3 px-3 text-center text-gray-300">{s.assistencias}</td>
@@ -132,7 +131,7 @@ export default function JogadorPage() {
                         <li key={e.id}>
                           <Link to={`/jogos/${e.jogo.id}`} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 p-3 min-h-12 rounded-xl border border-ablf-line bg-ablf-surface hover:border-ablf-green/60 text-sm">
                             <span className="text-white">{e.jogo.mandante.nome} <span className="text-ablf-yellow font-bold tabular-nums">{e.jogo.gols_mandante ?? ''}–{e.jogo.gols_visitante ?? ''}</span> {e.jogo.visitante.nome}</span>
-                            <span className="text-gray-500">{TIPOS_EVENTO[e.tipo]}{e.minuto != null ? ` · ${e.minuto}'` : ''}</span>
+                            <span className="text-gray-400">{TIPOS_EVENTO[e.tipo]}{e.minuto != null ? ` · ${e.minuto}'` : ''}</span>
                           </Link>
                         </li>
                       ))}

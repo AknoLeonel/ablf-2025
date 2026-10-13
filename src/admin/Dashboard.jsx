@@ -66,7 +66,7 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-wider text-gray-500">{new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+        <p className="text-xs uppercase tracking-wider text-gray-400">{new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
         <h1 className="font-display text-4xl font-black italic uppercase text-white leading-none">Hoje</h1>
         <p className="text-sm text-gray-400 mt-1">{user?.email} · {isAdmin ? 'Administrador' : 'Mesário'}</p>
       </header>
@@ -86,7 +86,7 @@ export default function Dashboard() {
 
           <section aria-labelledby="h-hoje">
             <h2 id="h-hoje" className="font-display text-2xl font-bold uppercase text-ablf-green mb-3">Ao vivo e jogos de hoje</h2>
-            {d.agora.length === 0 ? <p className="py-8 text-center text-gray-500 rounded-2xl border border-dashed border-ablf-line">Nenhum jogo hoje.</p> : <ul className="grid gap-3 md:grid-cols-2">{d.agora.map((j) => <JogoLinha key={j.id} j={j} />)}</ul>}
+            {d.agora.length === 0 ? <p className="py-8 text-center text-gray-400 rounded-2xl border border-dashed border-ablf-line">Nenhum jogo hoje.</p> : <ul className="grid gap-3 md:grid-cols-2">{d.agora.map((j) => <JogoLinha key={j.id} j={j} />)}</ul>}
           </section>
 
           {d.proximos.length > 0 && (

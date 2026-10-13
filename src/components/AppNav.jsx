@@ -34,7 +34,7 @@ export default function AppNav() {
     <>
       <header className="fixed w-full z-50 top-0 start-0 border-b border-gray-800 bg-ablf-dark/90 backdrop-blur-md">
         <div className="max-w-screen-xl flex items-center justify-between gap-4 mx-auto px-4 h-16">
-          <Link to="/" className="flex items-center gap-2.5 group" aria-label="ABLF – página inicial">
+          <Link to="/" className="flex items-center gap-2.5 group">
             <img src={logoAblf} alt="" width="40" height="40" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(254,221,0,0.3)]" />
             <span className="flex flex-col leading-none">
               <span className="text-xl font-display font-bold text-white">ABLF</span>

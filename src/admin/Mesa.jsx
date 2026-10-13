@@ -13,7 +13,7 @@ import { useCronometro } from './useCronometro';
 import { mensagemErro } from './erros';
 
 const LANCES = [
-  { tipo: 'gol', rotulo: 'Gol', classe: 'bg-ablf-green text-white hover:bg-green-600' },
+  { tipo: 'gol', rotulo: 'Gol', classe: 'bg-green-700 text-white hover:bg-green-800' },
   { tipo: 'assistencia', rotulo: 'Assistência', classe: 'bg-sky-600 text-white hover:bg-sky-500' },
   { tipo: 'amarelo', rotulo: 'Amarelo', classe: 'bg-yellow-400 text-black hover:bg-yellow-300' },
   { tipo: 'vermelho', rotulo: 'Vermelho', classe: 'bg-red-600 text-white hover:bg-red-500' },
@@ -186,9 +186,10 @@ export default function Mesa() {
 
   return (
     <div className="space-y-5 max-w-4xl">
+      <h1 className="sr-only">Mesa de súmula: {jogo.mandante.nome} × {jogo.visitante.nome}</h1>
       <div>
         <Link to="/admin/jogos" className="inline-flex items-center gap-1 min-h-10 text-sm text-gray-400 hover:text-ablf-yellow"><ArrowLeft size={16} />Jogos</Link>
-        <p className="text-xs uppercase tracking-wider text-gray-500">{jogo.competicao?.nome}{jogo.rodada ? ` · Rodada ${jogo.rodada}` : ''} · {formatDataJogo(jogo.data_hora)}</p>
+        <p className="text-xs uppercase tracking-wider text-gray-400">{jogo.competicao?.nome}{jogo.rodada ? ` · Rodada ${jogo.rodada}` : ''} · {formatDataJogo(jogo.data_hora)}</p>
       </div>
 
       {/* Placar */}
@@ -258,7 +259,7 @@ export default function Mesa() {
           {equipes.map((e) => (
             <div key={e.chave} {...(e.chave === lado ? painelProps(TABS, lado) : {})} className={e.chave === lado ? 'block' : 'hidden md:block'}>
               <h3 className="hidden md:flex items-center gap-2 font-display text-xl font-bold uppercase text-ablf-green mb-2"><Crest src={e.time.escudo_url} nome={e.time.nome} size={24} />{e.time.nome}</h3>
-              {e.noJogo.length === 0 ? <p className="text-gray-500 text-sm py-4">Time sem jogadores. Cadastre em Jogadores.</p> : (
+              {e.noJogo.length === 0 ? <p className="text-gray-400 text-sm py-4">Time sem jogadores. Cadastre em Jogadores.</p> : (
                 <ul className="grid grid-cols-2 gap-2">
                   {e.noJogo.map((j) => (
                     <li key={j.id}>
@@ -287,14 +288,14 @@ export default function Mesa() {
       {/* Linha do tempo */}
       <section aria-label="Lances registrados">
         <h2 className="font-display text-2xl font-bold uppercase text-white mb-2">Lances registrados ({eventos.length})</h2>
-        {eventos.length === 0 ? <p className="text-gray-500 text-sm">Nenhum lance ainda.</p> : (
+        {eventos.length === 0 ? <p className="text-gray-400 text-sm">Nenhum lance ainda.</p> : (
           <ul className="rounded-2xl border border-ablf-line divide-y divide-ablf-line overflow-hidden">
             {[...eventos].sort((a, b) => b.id - a.id).map((ev) => (
               <li key={ev.id} className="flex items-center gap-3 px-4 min-h-14 bg-ablf-surface">
-                <span className="w-12 font-mono text-sm text-gray-400">{ev.minuto != null ? `${ev.minuto}'` : '–'}<span className="block text-[0.6rem] text-gray-600">{PERIODOS[ev.periodo ?? 1].slice(0, 2)}</span></span>
+                <span className="w-12 font-mono text-sm text-gray-400">{ev.minuto != null ? `${ev.minuto}'` : '–'}<span className="block text-[0.6rem] text-gray-400">{PERIODOS[ev.periodo ?? 1].slice(0, 2)}</span></span>
                 <span className="min-w-0 flex-1 text-sm">
                   <span className="font-bold text-white">{ROTULO_LANCE[ev.tipo]}</span> · {nomeJogador(ev.jogador)}
-                  <span className="block text-xs text-gray-500">{ev.time_id === jogo.mandante.id ? jogo.mandante.nome : jogo.visitante.nome}{ev.motivo ? ` · ${ev.motivo}` : ''}</span>
+                  <span className="block text-xs text-gray-400">{ev.time_id === jogo.mandante.id ? jogo.mandante.nome : jogo.visitante.nome}{ev.motivo ? ` · ${ev.motivo}` : ''}</span>
                 </span>
                 {!bloqueada && <button type="button" onClick={() => apagarEvento(ev)} aria-label={`Remover ${ROTULO_LANCE[ev.tipo]} de ${nomeJogador(ev.jogador)}`} className="w-11 h-11 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-red-400 hover:bg-white/5"><Trash2 size={18} /></button>}
               </li>
@@ -313,18 +314,18 @@ export default function Mesa() {
               <ul className="space-y-2">
                 {e.elenco.map((j) => (
                   <li key={j.id} className="flex items-center gap-2">
-                    <span className="w-7 text-right font-mono text-gray-500">{j.numero ?? ''}</span>
+                    <span className="w-7 text-right font-mono text-gray-400">{j.numero ?? ''}</span>
                     <span className="flex-1 min-w-0 text-sm text-white truncate">{nomeJogador(j)}</span>
                     <span role="group" aria-label={`Escalação de ${nomeJogador(j)}`} className="inline-flex rounded-lg overflow-hidden border border-ablf-line">
                       {[['fora', 'Fora'], ['titular', 'Tit.'], ['reserva', 'Res.']].map(([v, l]) => (
                         <button key={v} type="button" aria-pressed={stateEsc(j.id) === v} disabled={bloqueada || setEscalacao.isPending}
                           onClick={() => stateEsc(j.id) !== v && setEscalacao.mutate({ jogador: j, estado: v })}
-                          className={`min-h-10 px-3 text-xs font-bold ${stateEsc(j.id) === v ? (v === 'fora' ? 'bg-ablf-line text-white' : 'bg-ablf-green text-white') : 'text-gray-400'}`}>{l}</button>
+                          className={`min-h-10 px-3 text-xs font-bold ${stateEsc(j.id) === v ? (v === 'fora' ? 'bg-ablf-line text-white' : 'bg-green-700 text-white') : 'text-gray-400'}`}>{l}</button>
                       ))}
                     </span>
                   </li>
                 ))}
-                {e.elenco.length === 0 && <li className="text-sm text-gray-500">Sem jogadores cadastrados.</li>}
+                {e.elenco.length === 0 && <li className="text-sm text-gray-400">Sem jogadores cadastrados.</li>}
               </ul>
             </div>
           ))}
@@ -358,7 +359,7 @@ export default function Mesa() {
             <button key={l.tipo} type="button" onClick={() => registrar(l.tipo)} className={`min-h-16 rounded-xl text-lg font-bold transition-colors ${l.classe}`}>{l.rotulo}</button>
           ))}
         </div>
-        <p className="mt-3 text-xs text-gray-500 flex items-center gap-1"><Undo2 size={14} />Errou? Use “Desfazer” no aviso que aparece depois.</p>
+        <p className="mt-3 text-xs text-gray-400 flex items-center gap-1"><Undo2 size={14} />Errou? Use “Desfazer” no aviso que aparece depois.</p>
       </Sheet>
 
       {/* Folha: confirmações */}

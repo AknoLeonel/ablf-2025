@@ -10,7 +10,7 @@ const LogoMarquee = () => {
       <div className="flex w-full overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...PARTNERS_LIST, ...PARTNERS_LIST].map((partner, index) => (
-            <div key={index} className="mx-12 opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+            <div key={index} className="mx-12 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
               <span className="text-2xl font-bold text-gray-400 hover:text-ablf-green font-mono uppercase">{partner}</span>
             </div>
           ))}

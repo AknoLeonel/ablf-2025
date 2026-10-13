@@ -93,7 +93,7 @@ const NewsSection = () => {
                 </div>
 
                 {/* Texto */}
-                <div className="flex items-center gap-2 text-gray-500 text-sm mb-3 font-mono">
+                <div className="flex items-center gap-2 text-gray-400 text-sm mb-3 font-mono">
                   <Calendar size={14} />
                   <span>{post.date}</span>
                 </div>

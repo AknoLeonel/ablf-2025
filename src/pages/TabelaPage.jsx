@@ -110,7 +110,7 @@ export default function TabelaPage() {
           </div>
         )}
 
-        <p className="mt-6 text-xs text-gray-500">
+        <p className="mt-6 text-xs text-gray-400">
           P pontos · J jogos · V vitórias · E empates · D derrotas · GP gols pró · GC gols contra · SG saldo de gols.
           Desempate: vitórias, saldo de gols, gols pró. Considera só jogos encerrados da fase classificatória.
         </p>

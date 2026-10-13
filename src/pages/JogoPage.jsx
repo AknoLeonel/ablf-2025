@@ -46,7 +46,7 @@ function Evento({ ev, lado }) {
       <Link to={entityPath('jogadores', ev.jogador.id, ev.jogador.nome)} className="font-medium text-white hover:text-ablf-yellow">
         {nomeJogador(ev.jogador)}
       </Link>
-      <div className="text-xs text-gray-500">
+      <div className="text-xs text-gray-400">
         {TIPOS_EVENTO[ev.tipo]}{ev.motivo ? ` · ${ev.motivo}` : ''}
       </div>
     </div>
@@ -56,7 +56,7 @@ function Evento({ ev, lado }) {
       <div>{lado === 'mandante' && texto}</div>
       <div className="flex flex-col items-center gap-1 w-11">
         <Icone tipo={ev.tipo} />
-        <span className="font-mono text-xs text-gray-500">{ev.minuto != null ? `${ev.minuto}'` : ''}</span>
+        <span className="font-mono text-xs text-gray-400">{ev.minuto != null ? `${ev.minuto}'` : ''}</span>
       </div>
       <div>{lado === 'visitante' && texto}</div>
     </li>
@@ -88,9 +88,9 @@ function Elenco({ time, itens }) {
     <ul className="space-y-1">
       {arr.map(({ jogador }) => (
         <li key={jogador.id} className="flex items-center gap-3 min-h-9 text-sm">
-          <span className="w-7 text-right font-mono text-gray-500">{jogador.numero ?? ''}</span>
+          <span className="w-7 text-right font-mono text-gray-400">{jogador.numero ?? ''}</span>
           <Link to={entityPath('jogadores', jogador.id, jogador.nome)} className="text-white hover:text-ablf-yellow">{nomeJogador(jogador)}</Link>
-          <span className="text-xs text-gray-600">{POSICOES[jogador.posicao] ?? ''}</span>
+          <span className="text-xs text-gray-400">{POSICOES[jogador.posicao] ?? ''}</span>
         </li>
       ))}
     </ul>
@@ -101,7 +101,7 @@ function Elenco({ time, itens }) {
         <Crest src={time.escudo_url} nome={time.nome} size={24} />{time.nome}
       </h3>
       {lista(titulares)}
-      {reservas.length > 0 && (<><div className="mt-3 mb-1 text-xs uppercase tracking-wider text-gray-500">Reservas</div>{lista(reservas)}</>)}
+      {reservas.length > 0 && (<><div className="mt-3 mb-1 text-xs uppercase tracking-wider text-gray-400">Reservas</div>{lista(reservas)}</>)}
     </div>
   );
 }
@@ -148,6 +148,7 @@ export default function JogoPage() {
             return (
               <>
                 <BackLink to={`/jogos?c=${jogo.competicao_id}`}>Todos os jogos</BackLink>
+                <h1 className="sr-only">{jogo.mandante.nome} × {jogo.visitante.nome}</h1>
                 <section aria-label="Placar" className="rounded-3xl border border-ablf-line bg-gradient-to-b from-ablf-raised to-ablf-surface p-4 sm:p-6">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-gray-400 truncate">
@@ -178,7 +179,7 @@ export default function JogoPage() {
                     {jogo.local && <div className="flex items-center gap-2"><MapPin size={16} aria-hidden="true" /><dt className="sr-only">Local</dt><dd>{jogo.local}</dd></div>}
                     {equipe.length > 0 && <div className="flex items-start gap-2"><UserCheck size={16} aria-hidden="true" className="mt-0.5 shrink-0" /><dt className="sr-only">Arbitragem</dt><dd>{equipe.join(' · ')}</dd></div>}
                   </dl>
-                  {aoVivo && <p className="mt-3 text-xs text-gray-500">Atualiza automaticamente a cada 15 segundos.</p>}
+                  {aoVivo && <p className="mt-3 text-xs text-gray-400">Atualiza automaticamente a cada 15 segundos.</p>}
                 </section>
 
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -194,7 +195,7 @@ export default function JogoPage() {
                 <div {...painelProps(TABS, aba)} className="mt-5">
                   {aba === 'lances' && (
                     dados.evs.length === 0 ? (
-                      <p className="py-10 text-center text-gray-500">Nenhum lance registrado ainda.</p>
+                      <p className="py-10 text-center text-gray-400">Nenhum lance registrado ainda.</p>
                     ) : (
                       <>
                         <div className="space-y-3 mb-6">
@@ -204,9 +205,9 @@ export default function JogoPage() {
                           </div>
                         </div>
                         <Chips items={FILTROS} value={filtro} onChange={setFiltro} label="Filtrar lances" />
-                        {visiveis.length === 0 ? <p className="py-8 text-center text-gray-500">Nenhum lance neste filtro.</p> : periodos.map((p) => (
+                        {visiveis.length === 0 ? <p className="py-8 text-center text-gray-400">Nenhum lance neste filtro.</p> : periodos.map((p) => (
                           <section key={p} aria-label={PERIODOS[p]} className="mt-4">
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">{PERIODOS[p]}</h3>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">{PERIODOS[p]}</h3>
                             <ul>{visiveis.filter((e) => (e.periodo ?? 1) === p).map((ev) => <Evento key={ev.id} ev={ev} lado={lado(ev)} />)}</ul>
                           </section>
                         ))}
@@ -219,7 +220,7 @@ export default function JogoPage() {
                         <Elenco time={jogo.mandante} itens={elenco(jogo.mandante.id)} />
                         <Elenco time={jogo.visitante} itens={elenco(jogo.visitante.id)} />
                       </div>
-                    ) : <p className="py-10 text-center text-gray-500">Escalações ainda não informadas.</p>
+                    ) : <p className="py-10 text-center text-gray-400">Escalações ainda não informadas.</p>
                   )}
                   {aba === 'fotos' && <Galeria jogoId={jogo.id} titulo="" mensagemVazio="Ainda não há fotos deste jogo." />}
                 </div>

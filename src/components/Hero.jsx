@@ -13,7 +13,7 @@ const Hero = () => {
     <section className="relative min-h-screen flex flex-col pt-20 bg-ablf-dark overflow-hidden">
       
       {/* Fundo Decorativo Gigante (Marca d'água) */}
-      <div className="absolute top-0 right-0 text-[20rem] font-display font-bold text-white/5 leading-none select-none z-0 pointer-events-none">
+      <div aria-hidden="true" className="absolute top-0 right-0 text-[20rem] font-display font-bold text-white/5 leading-none select-none z-0 pointer-events-none">
         ABLF
       </div>
 

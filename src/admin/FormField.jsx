@@ -66,7 +66,7 @@ function ArquivoField({ field, value, onChange, documento }) {
   ) : value ? (
     <img src={value} alt="" className="w-16 h-16 object-cover rounded-xl border border-ablf-line bg-ablf-surface" />
   ) : (
-    <div className="w-16 h-16 rounded-xl border border-dashed border-ablf-line flex items-center justify-center text-gray-600"><ImagePlus size={20} /></div>
+    <div className="w-16 h-16 rounded-xl border border-dashed border-ablf-line flex items-center justify-center text-gray-400"><ImagePlus size={20} /></div>
   );
 
   return (
@@ -138,7 +138,7 @@ export default function FormField({ field, value, onChange, relationOptions }) {
         {field.label}{field.required && <span className="text-ablf-yellow" aria-hidden="true"> *</span>}
       </label>
       {controle}
-      {field.help && <p className="text-xs text-gray-500 mt-1">{field.help}</p>}
+      {field.help && <p className="text-xs text-gray-400 mt-1">{field.help}</p>}
     </div>
   );
 }

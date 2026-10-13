@@ -148,7 +148,7 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
       <div className="flex items-center gap-3 mb-4">
         <label className="relative flex-1 sm:flex-none sm:w-72">
           <span className="sr-only">Buscar em {resource.titulo}</span>
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true" />
           <input type="search" value={busca} onChange={(e) => { setBusca(e.target.value); setPagina(0); }} placeholder="Buscar…"
             className="w-full min-h-12 pl-10 pr-3 rounded-xl bg-ablf-surface border border-ablf-line text-white placeholder-gray-500 focus:border-ablf-green focus:outline-none" />
         </label>
@@ -166,18 +166,18 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
         <>
           {/* Celular: cartões */}
           <ul className="md:hidden space-y-3">
-            {visiveis.length === 0 && <li className="py-10 text-center text-gray-500">Nenhum registro.</li>}
+            {visiveis.length === 0 && <li className="py-10 text-center text-gray-400">Nenhum registro.</li>}
             {visiveis.map((row) => (
               <li key={chaveLinha(row, pk)} className="rounded-2xl border border-ablf-line bg-ablf-surface p-4">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 font-bold text-white break-words">{valorColuna(colTitulo, row) ?? <span className="text-gray-600">—</span>}</div>
+                  <div className="min-w-0 font-bold text-white break-words">{valorColuna(colTitulo, row) ?? <span className="text-gray-400">—</span>}</div>
                   <div className="shrink-0 -mr-2 -mt-2">{acoes(row)}</div>
                 </div>
                 <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
                   {colResto.map((c) => (
                     <div key={c.key} className="min-w-0">
-                      <dt className="text-[0.68rem] uppercase tracking-wider text-gray-500">{c.label}</dt>
-                      <dd className="text-gray-200 break-words">{valorColuna(c, row) ?? <span className="text-gray-600">—</span>}</dd>
+                      <dt className="text-[0.68rem] uppercase tracking-wider text-gray-400">{c.label}</dt>
+                      <dd className="text-gray-200 break-words">{valorColuna(c, row) ?? <span className="text-gray-400">—</span>}</dd>
                     </div>
                   ))}
                 </dl>
@@ -195,11 +195,11 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
                 </tr>
               </thead>
               <tbody>
-                {visiveis.length === 0 && <tr><td colSpan={resource.columns.length + 1} className="py-8 text-center text-gray-500">Nenhum registro.</td></tr>}
+                {visiveis.length === 0 && <tr><td colSpan={resource.columns.length + 1} className="py-8 text-center text-gray-400">Nenhum registro.</td></tr>}
                 {visiveis.map((row) => (
                   <tr key={chaveLinha(row, pk)} className="border-t border-ablf-line hover:bg-ablf-surface">
                     {resource.columns.map((c) => (
-                      <td key={c.key} className="py-2 px-3 text-gray-200 align-middle">{valorColuna(c, row) ?? <span className="text-gray-600">—</span>}</td>
+                      <td key={c.key} className="py-2 px-3 text-gray-200 align-middle">{valorColuna(c, row) ?? <span className="text-gray-400">—</span>}</td>
                     ))}
                     <td className="py-1 px-3 whitespace-nowrap text-right">{acoes(row)}</td>
                   </tr>
@@ -223,7 +223,7 @@ export default function ResourceManager({ resource, filter, defaults, prepare, r
       {/* Botão flutuante "Novo" (celular) */}
       {podeCriar && (
         <button type="button" onClick={() => { setErro(''); setEditando('novo'); }} aria-label={`Novo registro em ${resource.titulo}`}
-          className="md:hidden fixed right-4 bottom-24 z-40 w-14 h-14 rounded-full bg-ablf-green text-white shadow-xl flex items-center justify-center active:scale-95 transition-transform">
+          className="md:hidden fixed right-4 bottom-24 z-40 w-14 h-14 rounded-full bg-green-700 text-white shadow-xl flex items-center justify-center active:scale-95 transition-transform">
           <Plus size={26} />
         </button>
       )}
@@ -267,7 +267,7 @@ function Formulario({ resource, fields, row, defaults, relationOptions, erro, sa
       <form id={formId} onSubmit={(e) => { e.preventDefault(); onSubmit(valores); }}>
         {resumo && (
           <dl className="mb-5 p-3 rounded-xl bg-ablf-surface border border-ablf-line space-y-1.5 text-sm">
-            {resumo.map(([k, v]) => <div key={k} className="flex gap-2"><dt className="text-gray-500 min-w-24">{k}</dt><dd className="text-gray-200 break-words">{v || '—'}</dd></div>)}
+            {resumo.map(([k, v]) => <div key={k} className="flex gap-2"><dt className="text-gray-400 min-w-24">{k}</dt><dd className="text-gray-200 break-words">{v || '—'}</dd></div>)}
           </dl>
         )}
         <div className="grid md:grid-cols-2 gap-4">

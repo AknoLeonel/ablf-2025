@@ -52,7 +52,7 @@ export default function TimePage() {
 
               {atual && (
                 <section aria-label={`Campanha em ${compAtual?.nome ?? 'competição'}`} className="mt-4">
-                  <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">{compAtual?.nome} {compAtual ? `(${compAtual.ano})` : ''}{atual.grupo ? ` · Grupo ${atual.grupo}` : ''}</p>
+                  <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">{compAtual?.nome} {compAtual ? `(${compAtual.ano})` : ''}{atual.grupo ? ` · Grupo ${atual.grupo}` : ''}</p>
                   <div className="grid grid-cols-4 gap-2">
                     <StatBox label="Posição" value={`${atual.posicao}º`} destaque />
                     <StatBox label="Pontos" value={atual.pontos} />

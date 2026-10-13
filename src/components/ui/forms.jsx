@@ -18,7 +18,7 @@ export function Field({ label, hint, error, required, children }) {
         {label}{required && <span className="text-ablf-yellow" aria-hidden="true"> *</span>}
       </label>
       {child}
-      {hint && <p id={`${id}-hint`} className="mt-1 text-xs text-gray-500">{hint}</p>}
+      {hint && <p id={`${id}-hint`} className="mt-1 text-xs text-gray-400">{hint}</p>}
       {error && <p id={`${id}-erro`} role="alert" className="mt-1 text-sm text-red-400">{error}</p>}
     </div>
   );

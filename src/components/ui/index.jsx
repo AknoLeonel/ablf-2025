@@ -6,7 +6,7 @@ const cx = (...c) => c.filter(Boolean).join(' ');
 /* ---------- Botão (mínimo 44px de altura no toque) ---------- */
 const BTN = {
   primary: 'bg-ablf-yellow text-ablf-blue hover:bg-white',
-  success: 'bg-ablf-green text-white hover:bg-green-600',
+  success: 'bg-green-700 text-white hover:bg-green-800',
   secondary: 'border border-white/20 text-white hover:bg-white/10',
   ghost: 'text-gray-300 hover:text-white hover:bg-white/5',
   danger: 'bg-red-600 text-white hover:bg-red-500',
@@ -81,10 +81,10 @@ export function Tabs({ tabs, value, onChange, label = 'Seções', className = ''
         const ativo = t.id === value;
         return (
           <button key={t.id} role="tab" type="button" id={`${base}-${t.id}`} aria-selected={ativo}
-            aria-controls={`${base}-painel`} tabIndex={ativo ? 0 : -1} onClick={() => onChange(t.id)}
+            tabIndex={ativo ? 0 : -1} onClick={() => onChange(t.id)}
             className={cx('relative shrink-0 min-h-11 px-4 text-sm font-bold uppercase tracking-wider transition-colors',
               ativo ? 'text-ablf-yellow' : 'text-gray-400 hover:text-white')}>
-            {t.label}{t.count != null && <span className="ml-1.5 text-xs text-gray-500">{t.count}</span>}
+            {t.label}{t.count != null && <span className="ml-1.5 text-xs text-gray-400">{t.count}</span>}
             {ativo && <span className="absolute inset-x-3 -bottom-px h-0.5 bg-ablf-yellow" aria-hidden="true" />}
           </button>
         );
@@ -100,7 +100,7 @@ export function Chips({ items, value, onChange, label }) {
       {items.map((it) => (
         <button key={it.id} type="button" aria-pressed={it.id === value} onClick={() => onChange(it.id)}
           className={cx('snap-start shrink-0 min-h-10 px-4 rounded-full text-sm font-bold border transition-colors',
-            it.id === value ? 'bg-ablf-green border-ablf-green text-white' : 'border-ablf-line text-gray-300 hover:border-gray-500')}>
+            it.id === value ? 'bg-green-700 border-green-700 text-white' : 'border-ablf-line text-gray-300 hover:border-gray-500')}>
           {it.label}
         </button>
       ))}

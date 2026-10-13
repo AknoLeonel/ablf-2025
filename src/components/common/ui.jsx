@@ -7,9 +7,10 @@ import { iniciais } from '../../lib/format';
 export function PageHeader({ eyebrow, title, subtitle, children }) {
   return (
     <header className="pt-24 pb-6 md:pt-28 md:pb-10 bg-ablf-card border-b border-gray-800 relative overflow-hidden">
-      <div className="absolute -top-10 right-0 text-[14rem] font-display font-bold text-white/5 leading-none select-none pointer-events-none hidden md:block">
-        ABLF
-      </div>
+      <div
+        aria-hidden="true"
+        className="absolute -top-10 right-0 text-[14rem] font-display font-bold text-white/5 leading-none select-none pointer-events-none hidden md:block before:content-['ABLF']"
+      />
       <div className="container mx-auto px-4 relative z-10">
         {eyebrow && (
           <span className="text-ablf-yellow font-display uppercase tracking-widest text-lg font-bold">
@@ -55,7 +56,7 @@ export function ErrorBlock({ error }) {
 
 export function Empty({ children = 'Nada por aqui ainda.' }) {
   return (
-    <div className="flex flex-col items-center gap-3 py-16 text-gray-500 text-center">
+    <div className="flex flex-col items-center gap-3 py-16 text-gray-400 text-center">
       <Inbox size={32} />
       <p>{children}</p>
     </div>
@@ -107,7 +108,7 @@ export function Avatar({ src, nome, className = '' }) {
     );
   }
   return (
-    <div aria-hidden="true" className={`flex items-center justify-center bg-gray-800 text-gray-600 ${className}`}>
+    <div aria-hidden="true" className={`flex items-center justify-center bg-gray-800 text-gray-400 ${className}`}>
       <User size={40} />
     </div>
   );
@@ -145,7 +146,7 @@ export function StatBox({ label, value, destaque = false }) {
   return (
     <div className="p-4 bg-gray-900/60 border border-gray-800 rounded-xl text-center">
       <div className={`font-display font-bold text-4xl ${destaque ? 'text-ablf-yellow' : 'text-white'}`}>{value}</div>
-      <div className="text-xs uppercase tracking-wider text-gray-500 mt-1">{label}</div>
+      <div className="text-xs uppercase tracking-wider text-gray-400 mt-1">{label}</div>
     </div>
   );
 }

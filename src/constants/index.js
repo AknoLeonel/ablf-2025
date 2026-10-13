@@ -1,18 +1,18 @@
 import { FileCheck, Coins, Activity, Trophy, Users, Gavel, TrendingUp } from 'lucide-react';
 
 // IMPORTANDO AS IMAGENS LOCAIS (NOTÍCIAS)
-import post1 from '../assets/post1.png';
-import post2 from '../assets/post2.png';
-import post3 from '../assets/post3.png';
+import post1 from '../assets/post1.webp';
+import post2 from '../assets/post2.webp';
+import post3 from '../assets/post3.webp';
 
 // IMPORTANDO AS IMAGENS LOCAIS (INSTAGRAM)
-// Certifique-se de renomear os arquivos na pasta assets para: instagram1.png, instagram2.png, etc.
-import instagram1 from '../assets/instagram1.png';
-import instagram2 from '../assets/instagram2.png';
-import instagram3 from '../assets/instagram3.png';
-import instagram4 from '../assets/instagram4.png';
-import instagram5 from '../assets/instagram5.png';
-import instagram6 from '../assets/instagram6.png';
+// Certifique-se de renomear os arquivos na pasta assets para: instagram1.webp, instagram2.webp, etc.
+import instagram1 from '../assets/instagram1.webp';
+import instagram2 from '../assets/instagram2.webp';
+import instagram3 from '../assets/instagram3.webp';
+import instagram4 from '../assets/instagram4.webp';
+import instagram5 from '../assets/instagram5.webp';
+import instagram6 from '../assets/instagram6.webp';
 
 export const COMPANY_INFO = {
   name: "Associação Brasileira de Ligas de Futsal",

@@ -67,7 +67,7 @@ export default function JogosPage() {
                   <div className="mt-4"><Chips items={chips} value={ativa} onChange={setEscolhida} label="Rodada" /></div>
                   <div {...painelProps(FILTROS, filtro)} className="mt-6">
                     {visiveis.length === 0 ? (
-                      <p className="text-gray-500 text-center py-12">Nenhum jogo neste filtro.</p>
+                      <p className="text-gray-400 text-center py-12">Nenhum jogo neste filtro.</p>
                     ) : (
                       <div className="space-y-10">
                         {visiveis.map(({ chave, lista }) => (

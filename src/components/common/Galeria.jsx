@@ -9,7 +9,7 @@ export default function Galeria({ jogoId, jogadorId, timeId, titulo = 'Fotos', m
     queryKey: ['fotos', { jogoId, jogadorId, timeId }],
     queryFn: () => listFotos({ jogoId, jogadorId, timeId }),
   });
-  if (!fotos?.length) return mensagemVazio ? <p className="py-10 text-center text-gray-500">{mensagemVazio}</p> : null;
+  if (!fotos?.length) return mensagemVazio ? <p className="py-10 text-center text-gray-400">{mensagemVazio}</p> : null;
 
   return (
     <section className={titulo ? 'mt-12' : ''}>

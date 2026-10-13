@@ -29,7 +29,7 @@ export default function PlayerCard({ jogador, time }) {
         <div className="font-display text-xl font-bold uppercase text-white leading-tight group-hover:text-ablf-yellow transition-colors">
           {nomeJogador(jogador)}
         </div>
-        <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+        <div className="text-xs text-gray-400 uppercase tracking-wider mt-1">
           {POSICOES[jogador.posicao] ?? 'Atleta'}
           {t ? ` · ${t.nome}` : ''}
         </div>

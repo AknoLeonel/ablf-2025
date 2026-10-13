@@ -47,7 +47,7 @@ export default function HomeJogos() {
           {carregando ? (
             <div className="flex gap-3 overflow-hidden"><Skeleton className="h-44 w-[85%] shrink-0" /><Skeleton className="h-44 w-[85%] shrink-0" /></div>
           ) : listas[ativa].length === 0 ? (
-            <p className="py-10 text-center text-gray-500">Nenhum jogo nesta lista.</p>
+            <p className="py-10 text-center text-gray-400">Nenhum jogo nesta lista.</p>
           ) : (
             <ul className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-4 pb-1 md:mx-0 md:px-0 md:grid md:grid-cols-2 xl:grid-cols-4 md:overflow-visible">
               {listas[ativa].map((j) => (

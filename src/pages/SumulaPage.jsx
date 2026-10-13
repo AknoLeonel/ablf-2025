@@ -27,7 +27,7 @@ export default function SumulaPage() {
               return (
                 <>
                   <BackLink to={`/jogos/${jogo.id}`}>Voltar ao jogo</BackLink>
-                  <p className="py-12 text-center text-gray-400">A súmula oficial fica disponível depois do encerramento da partida.</p>
+                  <p className="py-12 text-center text-gray-700">A súmula oficial fica disponível depois do encerramento da partida.</p>
                 </>
               );
             }
@@ -45,8 +45,8 @@ export default function SumulaPage() {
                   <header className="flex items-center gap-4 pb-4 border-b-2 border-gray-800">
                     <img src={logoAblf} alt="" width="56" height="56" className="w-14 h-14 object-contain" />
                     <div>
-                      <div className="font-display text-2xl font-black uppercase leading-none">Associação Brasileira de Ligas de Futsal</div>
-                      <div className="text-xs uppercase tracking-widest text-gray-600 mt-1">Súmula oficial da partida · nº {jogo.id}</div>
+                      <h1 className="font-display text-2xl font-black uppercase leading-none">Associação Brasileira de Ligas de Futsal</h1>
+                      <div className="text-xs uppercase tracking-widest text-gray-700 mt-1">Súmula oficial da partida · nº {jogo.id}</div>
                     </div>
                   </header>
 
@@ -72,7 +72,7 @@ export default function SumulaPage() {
                       {[jogo.mandante, jogo.visitante].map((t) => (
                         <div key={t.id}>
                           <div className="font-bold uppercase border-b border-gray-400 mb-1">{t.nome}</div>
-                          {elenco(t.id).length === 0 ? <p className="text-gray-500">Escalação não informada.</p> : (
+                          {elenco(t.id).length === 0 ? <p className="text-gray-700">Escalação não informada.</p> : (
                             <ol className="columns-1">
                               {elenco(t.id).map(({ jogador, titular }) => (
                                 <li key={jogador.id} className="flex gap-2"><span className="w-7 text-right font-mono">{jogador.numero ?? '–'}</span><span>{nomeJogador(jogador)}{titular ? '' : ' (res.)'}</span></li>
@@ -86,7 +86,7 @@ export default function SumulaPage() {
 
                   <section className="mt-6" aria-label="Ocorrências">
                     <h2 className="font-display text-lg font-black uppercase mb-2">Ocorrências</h2>
-                    {evs.length === 0 ? <p className="text-gray-500">Nenhuma ocorrência registrada.</p> : (
+                    {evs.length === 0 ? <p className="text-gray-700">Nenhuma ocorrência registrada.</p> : (
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="text-left border-b border-gray-600"><th className="py-1 pr-2">Tempo</th><th className="pr-2">Min</th><th className="pr-2">Equipe</th><th className="pr-2">Atleta</th><th>Ocorrência</th></tr>
@@ -112,7 +112,7 @@ export default function SumulaPage() {
                     ))}
                   </section>
 
-                  <footer className="mt-8 pt-3 border-t border-gray-300 text-xs text-gray-600">
+                  <footer className="mt-8 pt-3 border-t border-gray-300 text-xs text-gray-700">
                     {jogo.sumula_fechada && jogo.fechada_em ? `Súmula fechada em ${new Date(jogo.fechada_em).toLocaleString('pt-BR')}. ` : 'Súmula ainda não fechada oficialmente. '}
                     Documento gerado pelo sistema da ABLF em {new Date().toLocaleString('pt-BR')}.
                   </footer>
